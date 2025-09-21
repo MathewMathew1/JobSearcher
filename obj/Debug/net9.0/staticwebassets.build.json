@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Xj91t+sZmX88uvzieh7ygg4JN1LSJfu8gFaqNsJY2tk=",
+  "Hash": "VspGZmGkJbTaNAFhFiN995xTwCzo7a1I/Rtiy/P/99s=",
   "Source": "JobSearcher",
   "BasePath": "_content/JobSearcher",
   "Mode": "Default",
@@ -416,12 +416,12 @@
       "OriginalItemSpec": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
-      "Identity": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-mg0jlk98sw.gz",
+      "Identity": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-0htx94xz16.gz",
       "SourceId": "JobSearcher",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/JobSearcher",
-      "RelativePath": "css/site#[.{fingerprint=mg0jlk98sw}]?.css.gz",
+      "RelativePath": "css/site#[.{fingerprint=0htx94xz16}]?.css.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -430,8 +430,8 @@
       "RelatedAsset": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\css\\site.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "ixjq5o7jim",
-      "Integrity": "Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs=",
+      "Fingerprint": "wu2mq2ek7y",
+      "Integrity": "+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\css\\site.css"
@@ -1417,8 +1417,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "mg0jlk98sw",
-      "Integrity": "6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew=",
+      "Fingerprint": "0htx94xz16",
+      "Integrity": "jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
@@ -2728,13 +2728,13 @@
   ],
   "Endpoints": [
     {
-      "Route": "css/site.css",
-      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-mg0jlk98sw.gz",
+      "Route": "css/site.0htx94xz16.css",
+      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-0htx94xz16.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.002873563218"
+          "Quality": "0.002070393375"
         }
       ],
       "ResponseHeaders": [
@@ -2744,19 +2744,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "347"
+          "Value": "482"
         },
         {
           "Name": "ETag",
-          "Value": "\"Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs=\""
+          "Value": "\"+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
         },
         {
           "Name": "Cache-Control",
-          "Value": "no-cache"
+          "Value": "max-age=31536000, immutable"
         },
         {
           "Name": "Content-Encoding",
@@ -2772,18 +2772,26 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew=\""
+          "Value": "W/\"jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws=\""
         }
       ],
       "EndpointProperties": [
         {
+          "Name": "fingerprint",
+          "Value": "0htx94xz16"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
           "Name": "integrity",
-          "Value": "sha256-6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew="
+          "Value": "sha256-jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws="
         }
       ]
     },
     {
-      "Route": "css/site.css",
+      "Route": "css/site.0htx94xz16.css",
       "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2793,7 +2801,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "740"
+          "Value": "1098"
         },
         {
           "Name": "Content-Type",
@@ -2801,121 +2809,21 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew=\""
+          "Value": "\"jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.css.gz",
-      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-mg0jlk98sw.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "347"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.mg0jlk98sw.css",
-      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-mg0jlk98sw.gz",
-      "Selectors": [
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip",
-          "Quality": "0.002873563218"
-        }
-      ],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "347"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
         },
         {
           "Name": "Cache-Control",
           "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "W/\"6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "mg0jlk98sw"
+          "Value": "0htx94xz16"
         },
         {
           "Name": "label",
@@ -2923,13 +2831,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew="
+          "Value": "sha256-jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws="
         }
       ]
     },
     {
-      "Route": "css/site.mg0jlk98sw.css",
-      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\css\\site.css",
+      "Route": "css/site.0htx94xz16.css.gz",
+      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-0htx94xz16.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2938,7 +2846,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "740"
+          "Value": "482"
         },
         {
           "Name": "Content-Type",
@@ -2946,56 +2854,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew=\""
+          "Value": "\"+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "mg0jlk98sw"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-6uFdAK/xasfURTYXEbmG1otZTRhj1GbVeEYTgU6Xgew="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.mg0jlk98sw.css.gz",
-      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-mg0jlk98sw.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "347"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 20 Sep 2025 14:30:39 GMT"
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -3013,7 +2876,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "mg0jlk98sw"
+          "Value": "0htx94xz16"
         },
         {
           "Name": "label",
@@ -3021,7 +2884,144 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-Zpw0W4hrBCxDLuiO+Hafonptkt4OH6uKer4Q7+qcoGs="
+          "Value": "sha256-+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-0htx94xz16.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.002070393375"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "482"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1098"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-jOPZE6X9ttGtL24oXxSYDqDq0K5+f+lrLaNrFbWJvws="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css.gz",
+      "AssetFile": "C:\\Users\\HP\\Desktop\\JobSearcher\\JobSearcher\\obj\\Debug\\net9.0\\compressed\\amso4w193e-0htx94xz16.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "482"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 21 Sep 2025 13:14:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-+DkevqTloDd152IedEbo9H6DiuErz5KKtGSFZ18HP1I="
         }
       ]
     },

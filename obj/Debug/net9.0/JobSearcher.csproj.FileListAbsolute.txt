@@ -234,7 +234,6 @@ C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.AspNetCor
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
-C:\Users\HP\Desktop\JobSearcher\JobSearcher\obj\Debug\net9.0\compressed\amso4w193e-mg0jlk98sw.gz
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.Data.Sqlite.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Sqlite.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\SQLitePCLRaw.batteries_v2.dll
@@ -606,3 +605,4 @@ C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\.playwright\package
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\playwright.ps1
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\HtmlAgilityPack.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.Playwright.dll
+C:\Users\HP\Desktop\JobSearcher\JobSearcher\obj\Debug\net9.0\compressed\amso4w193e-0htx94xz16.gz
