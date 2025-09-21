@@ -1,0 +1,7 @@
+@using JobSearcher.Job
+@model List<JobInfo>
+
+@foreach(var job in Model)
+{
+    @await Html.PartialAsync("JobOpening/_JobOpening", job)
+}

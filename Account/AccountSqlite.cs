@@ -1,0 +1,42 @@
+using JobSearcher.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace JobSearcher.Account
+{
+    public class AccountMySql : IAccount
+    {
+        private AppDbContext _database;
+
+        public AccountMySql(AppDbContext database)
+        {
+            _database = database;
+        }
+
+        public async Task<UserInDatabase?> GetUser(string email)
+        {
+            return await _database.Users.FirstOrDefaultAsync(user => user.Email == email);
+        }
+
+        public async Task<UserInDatabase?> GetUserById(int id)
+        {
+            return await _database.Users.FirstOrDefaultAsync(user => user.Id == id);
+        }
+
+        public async Task<UserInDatabase> SetUser(User user)
+        {
+            var userInDb = new UserInDatabase
+            {
+                Name = user.Name,
+                Email = user.Email,
+                ProfilePicture = user.ProfilePicture
+            };
+
+            await _database.Users.AddAsync(userInDb);
+            await _database.SaveChangesAsync();
+            return userInDb;
+        }
+
+    }
+}

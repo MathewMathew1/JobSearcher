@@ -1,0 +1,52 @@
+@model JobSearcher.Job.GlassDoorJobSearch
+@{
+    ViewData["Title"] = "Jobs search";
+}
+
+<div class="text-center container flex-column">
+    <div>
+        <h1>Job Searches: </h1>
+    </div>
+    <p>
+        <a class="btn btn-primary" data-bs-toggle="collapse" href="#glassDoorJobSearch" role="button"
+            aria-expanded="false" aria-controls="glassDoorJobSearch">
+            GlassDoor Job Search
+        </a>
+
+    </p>
+    <div class="collapse" id="glassDoorJobSearch">
+        <div class="card card-body">
+            <form id="glassDoorForm" asp-controller="Job" asp-action="GetGlassDoorJobs" method="get">
+                <div class="mb-3">
+                    <label asp-for="JobSearched" class="form-label"></label>
+                    <input asp-for="JobSearched" class="form-control" placeholder="Job searched" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PlaceToLookFor" class="form-label"></label>
+                    <input asp-for="PlaceToLookFor" class="form-control" placeholder="Place" />
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <h2>Jobs Openings:</h2>
+            <ul id="glassDoorJobs">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function () {
+    $('#glassDoorForm').submit(function (e) {
+        e.preventDefault(); 
+        var $form = $(this);
+        var url = $form.attr('action');
+
+        $.get(url, $form.serialize(), function(html) {
+            $('#glassDoorJobs').html(html); 
+        }).fail(function() {
+            alert('Error fetching jobs');
+        });
+    });
+});
+</script>

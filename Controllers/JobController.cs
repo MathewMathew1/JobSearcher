@@ -1,0 +1,45 @@
+using Microsoft.AspNetCore.Mvc;
+using JobSearcher.Job;
+
+namespace JobSearcher.Controllers;
+
+public class JobController : Controller
+{
+    private readonly ILogger<HomeController> _logger;
+    private readonly IGlassDoorJobSearcher _glassDoorJobSearcher;
+
+    public JobController(ILogger<HomeController> logger, IGlassDoorJobSearcher glassDoorJobSearcher)
+    {
+        _logger = logger;
+        _glassDoorJobSearcher = glassDoorJobSearcher;
+    }
+
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> GetGlassDoorJobs(GlassDoorJobSearch search)
+    {
+        try
+        {
+            var jobs = await _glassDoorJobSearcher.GetJobOfferings(search);
+            _logger.LogInformation($"jobs amount {jobs.Count}");
+
+            return PartialView("JobOpening/_JobOpeningList", jobs);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error getting glass door jobs {e}");
+            return StatusCode(500, new { error = "Unexpected error try again" });
+        }
+    }
+
+}
