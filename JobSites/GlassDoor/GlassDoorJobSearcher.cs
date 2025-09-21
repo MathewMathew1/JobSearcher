@@ -16,12 +16,12 @@ namespace JobSearcher.Job
 
             var page = await browser.NewPageAsync();
 
-            var url = $"https://www.glassdoor.com/Job/jobs.htm?sc.keyword={Uri.EscapeDataString(search.JobSearched)}&locT=C&locId=&locKeyword={Uri.EscapeDataString(search.PlaceToLookFor)}";
+            var url = $"https://www.glassdoor.com/Job/{search.PlaceToLookFor}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,23.htm";
             Console.WriteLine(url);
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
-            Console.WriteLine("here");
+
             await page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 });
-            Console.WriteLine("here 2");
+
             var content = await page.ContentAsync();
             var doc = new HtmlDocument();
             doc.LoadHtml(content);

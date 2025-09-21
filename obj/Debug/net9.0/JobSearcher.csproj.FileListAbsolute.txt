@@ -605,4 +605,4 @@ C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\.playwright\package
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\playwright.ps1
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\HtmlAgilityPack.dll
 C:\Users\HP\Desktop\JobSearcher\JobSearcher\bin\Debug\net9.0\Microsoft.Playwright.dll
-C:\Users\HP\Desktop\JobSearcher\JobSearcher\obj\Debug\net9.0\compressed\amso4w193e-z34sx8xqwm.gz
+C:\Users\HP\Desktop\JobSearcher\JobSearcher\obj\Debug\net9.0\compressed\amso4w193e-vr9aqp11ha.gz
