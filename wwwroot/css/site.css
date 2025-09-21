@@ -54,3 +54,8 @@ body {
     color: #4a4a4a;
     font-size: 0.95rem;
 }
+
+.jobOpening-list-small{
+  overflow: auto;
+  max-height: 400px;
+}
