@@ -3,7 +3,7 @@
 
 <li class="job-item d-flex flex-column flex-md-row align-items-start mb-3 p-3 border rounded shadow-sm">
     <div class="job-text me-md-3 mb-2 mb-md-0">
-        <strong class="job-name">@Model.Name</strong>
+        <a href="@Model.Link" target=”_blank” rel="noopener noreferrer"><strong class="job-name">@Model.Name</strong></a>
         <p class="job-description mb-0">@Model.Description</p>
     </div>
     @if (!string.IsNullOrEmpty(Model.ImageLink))
