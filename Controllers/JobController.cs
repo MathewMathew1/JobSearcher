@@ -30,6 +30,10 @@ public class JobController : Controller
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var jobs = await _glassDoorJobSearcher.GetJobOfferings(search);
             _logger.LogInformation($"jobs amount {jobs.Count}");
 

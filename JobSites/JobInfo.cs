@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace JobSearcher.Job
 {
     public class JobInfo
@@ -10,7 +12,12 @@ namespace JobSearcher.Job
 
     public class GlassDoorJobSearch
     {
+        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "JobSearched must be between 3 and 100 characters.")]
         public required string JobSearched { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "JobSearched must be between 3 and 100 characters.")]
         public required string PlaceToLookFor { get; set; }
     }
 }
