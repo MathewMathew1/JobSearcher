@@ -9,7 +9,7 @@ namespace JobSearcher.Api.MiddleWare
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var user = (string?)context.HttpContext.Items["UserId"];
+            var user = (int?)context.HttpContext.Items["UserId"];
             if (user is null)
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
