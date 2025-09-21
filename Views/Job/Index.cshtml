@@ -38,39 +38,34 @@
     </div>
 </div>
 
-<script>
-    $(function () {
-        $('#glassDoorForm').submit(function (e) {
-            e.preventDefault();
-            var $form = $(this);
+@section Scripts {
+    <script>
+        $(function () {
+            $(document).on('submit', '#glassDoorForm', function (e) {
+                e.preventDefault();
+                var $form = $(this);
 
-           
-            if (!$form.valid()) {
-                return false; 
-            }
+                if (!$form.valid()) return false;
 
-            var url = $form.attr('action');
-            $('#glassDoorJobError').hide();
+                var url = $form.attr('action');
+                $('#glassDoorJobError').hide();
 
-            $.get(url, $form.serialize(), function (html) {
-                $('#glassDoorJobs').html(html);
-            }).fail(function (xhr) {
-                var $errorDiv = $('#glassDoorJobError');
-                $errorDiv.empty();
-                $errorDiv.show();
-
-                if (xhr.status === 400 && xhr.responseJSON) {
-                    var messages = [];
-                    for (var key in xhr.responseJSON) {
-                        if (xhr.responseJSON.hasOwnProperty(key)) {
+                $.get(url, $form.serialize(), function (html) {
+                    $('#glassDoorJobs').html(html);
+                }).fail(function (xhr) {
+                    var $errorDiv = $('#glassDoorJobError');
+                    $errorDiv.empty().show();
+                    if (xhr.status === 400 && xhr.responseJSON) {
+                        var messages = [];
+                        for (var key in xhr.responseJSON) {
                             messages = messages.concat(xhr.responseJSON[key]);
                         }
+                        $errorDiv.html(messages.join('<br>'));
+                    } else {
+                        $errorDiv.text('Unexpected error fetching jobs.');
                     }
-                    $errorDiv.html(messages.join('<br>'));
-                } else {
-                    $errorDiv.text('Unexpected error fetching jobs.');
-                }
+                });
             });
         });
-    });
-</script>
+    </script>
+}
