@@ -1,0 +1,10 @@
+@using JobSearcher.JobOpening
+@using JobSearcher.ViewModels
+@model List<JobOpeningSearcherModel>
+@{
+    var glassDoorModel =
+    new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
+}
+<div class="container">
+    <h3>Your searches:</h3> @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
+</div>

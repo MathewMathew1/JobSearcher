@@ -3,6 +3,7 @@ using JobSearcher.Account;
 using JobSearcher.Api.MiddleWare;
 using JobSearcher.Data;
 using JobSearcher.Job;
+using JobSearcher.JobOpening;
 using JobSearcher.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -39,6 +40,7 @@ builder.Services.AddAuthentication(options =>
     options.CallbackPath = "/signin-google";
 });
 builder.Services.AddScoped<IAccount, AccountMySql>();
+builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IGlassDoorJobSearcher, GlassDoorJobSearcher>();
 builder.Services.AddHttpContextAccessor();

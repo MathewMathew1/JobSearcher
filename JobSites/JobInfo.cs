@@ -20,6 +20,6 @@ namespace JobSearcher.Job
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "JobSearched must be between 3 and 100 characters.")]
-        public required string PlaceToLookFor { get; set; }
+        public required string Location { get; set; }
     }
 }

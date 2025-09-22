@@ -18,10 +18,7 @@ public class NavbarViewComponent : ViewComponent
     {
         _logger.LogInformation("Logged here");
         var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-        if (user != null) {
-            Console.WriteLine($"User {user.Id} {user.ProfilePicture} {user.Name} {user.Email}");
-        }
-        
+
         return View(user); 
     }
 }

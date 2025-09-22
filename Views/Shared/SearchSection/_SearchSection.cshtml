@@ -1,0 +1,118 @@
+@using JobSearcher.JobOpening
+@model JobSearcher.ViewModels.SearchSectionViewModel
+
+<div class="mb-4">
+    <p>
+        <a class="btn btn-spoiler w-100 d-flex justify-content-between align-items-center border"
+            data-bs-toggle="collapse" href="#section-@Model.Site" role="button" aria-expanded="false"
+            aria-controls="section-@Model.Site">
+            @Model.Site Job Search
+            <span class="arrow">▼</span>
+        </a>
+    </p>
+
+    <div class="collapse" id="section-@Model.Site">
+        <ul class="list-group mb-3" id="list-@Model.Site">
+
+            @foreach (var search in Model.Searches)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@search.JobSearched (@search.Location)</span>
+                    <form asp-controller="UserJobSearcher" asp-action="Delete" id="delete-form-@Model.Site-@search.Id"
+                        method="post" class="mb-0 ajax-delete">
+                        <input type="hidden" name="id" value="@search.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </li>
+            }
+
+
+            <li class="no-searches list-group-item text-muted @(Model.Searches.Count != 0 ? "d-none" : "")">No searches
+                saved yet.</li>
+
+        </ul>
+
+        <form asp-controller="UserJobSearcher" asp-action="Create" method="post" id="formCreateSearch-@Model.Site"
+            class="form-create-search @(Model.CanAddMore ? "" : "d-none")" data-site="@Model.Site">
+            <input type="hidden" name="Site" value="@Model.Site" />
+            <div class="mb-2">
+                <input type="text" class="form-control" name="JobSearched" placeholder="Job title" required />
+            </div>
+            <div class="mb-2">
+                <input type="text" class="form-control" name="Location" placeholder="Location" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Search</button>
+        </form>
+
+        <div class="alert alert-warning @(Model.CanAddMore ? "d-none" : "")">
+            Maximum of 3 searches reached for @Model.Site.
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="application/javascript">
+    $(function () {
+        $(document).on('submit', "#formCreateSearch-@Model.Site", function (e) {
+            e.preventDefault()
+
+            let $form = $(this)
+            let url = $form.attr("action")
+
+            $.post(url, $form.serialize(), function (created) {
+                let newLi = `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>${created.jobSearched} (${created.location})</span>
+                    <form asp-controller="UserJobSearcher" asp-action="Delete"
+                          id="delete-form-@Model.Site-${created.id}"
+                          method="post" class="mb-0 ajax-delete">
+                        <input type="hidden" name="id" value="${created.id}" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </li>
+            `;
+                $("#list-@Model.Site").append(newLi);
+
+                $form[0].reset();
+                $form.closest(".collapse").find(".no-searches").addClass("d-none");
+                let count = $("#list-@Model.Site").children("li").length;
+
+                if (count >= 3 + 1) {
+                    $form.addClass("d-none");
+                    $form.closest(".collapse").find(".alert.alert-warning").removeClass("d-none");
+                }
+
+
+            }).fail(function (xhr) {
+                console.log(xhr)
+            });
+        })
+    })
+    $(function () {
+        $(document).on('submit', 'form[id^="delete-form-@Model.Site"]', function (e) {
+            e.preventDefault()
+
+            let $form = $(this)
+            let url = $form.attr("action")
+
+            $.post(url, $form.serialize(), function (deleted) {
+                $form.closest("li").remove();
+
+                let $list = $("#list-@Model.Site");
+
+                $("#formCreateSearch-@Model.Site").removeClass("d-none");
+                $list.closest(".collapse").find(".alert.alert-warning").addClass("d-none");
+
+                if ($list.children("li").not(".no-searches").length === 0) {
+                     let $noSearches = $list.find(".no-searches");
+                    $noSearches.removeClass("d-none");
+                }
+
+            }).fail(function (xhr) {
+                console.log(xhr)
+            });
+        })
+    })
+</script>
