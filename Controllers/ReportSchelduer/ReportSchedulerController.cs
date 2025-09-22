@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace UserJobSearcher.Controllers
 {
     [Route("user/report")]
-    public class UserReportController : Controller
+    public class ReportSchedulerController : Controller
     {
-        private readonly ILogger<UserReportController> _logger;
+        private readonly ILogger<ReportSchedulerController> _logger;
         private readonly IReportRepository _reportRepository;
         private readonly IAccount _account;
         private readonly IHttpContextAccessor _http;
 
-        public UserReportController(
-            ILogger<UserReportController> logger,
+        public ReportSchedulerController(
+            ILogger<ReportSchedulerController> logger,
             IReportRepository reportRepository,
             IAccount account,
             IHttpContextAccessor http)
@@ -24,26 +24,6 @@ namespace UserJobSearcher.Controllers
             _account = account;
             _http = http;
         }
-
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-                if (user == null)
-                    return RedirectToAction("Login", "Home");
-
-                var schedule = await _reportRepository.GetScheduleAsync(user.Id);
-                return View(schedule); 
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error retrieving user report schedule");
-                return StatusCode(500, new { error = "Unexpected error retrieving schedule." });
-            }
-        }
-
 
         [Authorize]
         [HttpGet("{userId}")]
@@ -66,15 +46,19 @@ namespace UserJobSearcher.Controllers
 
         [Authorize]
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] string timeZoneId)
+        public async Task<IActionResult> Create([FromBody] UserReportScheduleCreateDto userReportScheduleCreateDto)
         {
             try
             {
-                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-                if (user == null)
-                    return Unauthorized();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-                var schedule = await _reportRepository.CreateScheduleAsync(user.Id, timeZoneId);
+                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
+
+
+                var schedule = await _reportRepository.CreateScheduleAsync(user.Id, userReportScheduleCreateDto);
                 return Json(schedule);
             }
             catch (Exception e)
@@ -86,15 +70,19 @@ namespace UserJobSearcher.Controllers
 
         [Authorize]
         [HttpPatch("update")]
-        public async Task<IActionResult> Update([FromBody] UpdateReportScheduleDto dto)
+        public async Task<IActionResult> Update([FromBody] UserReportScheduleCreateDto userReportScheduleCreateDto)
         {
             try
             {
-                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-                if (user == null)
-                    return Unauthorized();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-                var updated = await _reportRepository.UpdateScheduleAsync(user.Id, dto.TimeZoneId, dto.IsActive);
+                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
+      
+
+                var updated = await _reportRepository.UpdateScheduleAsync(user.Id, userReportScheduleCreateDto);
                 return Json(updated);
             }
             catch (Exception e)
@@ -126,9 +114,5 @@ namespace UserJobSearcher.Controllers
         }
     }
 
-    public class UpdateReportScheduleDto
-    {
-        public string? TimeZoneId { get; set; }
-        public bool? IsActive { get; set; }
-    }
+
 }

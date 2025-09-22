@@ -52,7 +52,7 @@ namespace JobSearcher.Report
             }
         }
 
-        public async Task<UserReportSchedule> CreateScheduleAsync(int userId, string timeZoneId)
+        public async Task<UserReportSchedule> CreateScheduleAsync(int userId, UserReportScheduleCreateDto userReportScheduleCreateDto)
         {
             var existing = await _appDbContext.UserReportSchedules
                 .FirstOrDefaultAsync(s => s.UserId == userId);
@@ -65,8 +65,8 @@ namespace JobSearcher.Report
             var schedule = new UserReportSchedule
             {
                 UserId = userId,
-                TimeZoneId = timeZoneId,
-                IsActive = true
+                TimeZoneId = userReportScheduleCreateDto.TimeZoneId,
+                IsActive = userReportScheduleCreateDto.IsActive
             };
 
             _appDbContext.UserReportSchedules.Add(schedule);
@@ -75,7 +75,7 @@ namespace JobSearcher.Report
             return schedule;
         }
 
-        public async Task<UserReportSchedule> UpdateScheduleAsync(int userId, string? timeZoneId = null, bool? isActive = null)
+        public async Task<UserReportSchedule> UpdateScheduleAsync(int userId, UserReportScheduleCreateDto userReportScheduleCreateDto)
         {
             var schedule = await _appDbContext.UserReportSchedules
                 .FirstOrDefaultAsync(s => s.UserId == userId);
@@ -85,15 +85,10 @@ namespace JobSearcher.Report
                 throw new InvalidOperationException("User schedule not found.");
             }
 
-            if (timeZoneId != null)
-            {
-                schedule.TimeZoneId = timeZoneId;
-            }
-
-            if (isActive.HasValue)
-            {
-                schedule.IsActive = isActive.Value;
-            }
+  
+            schedule.TimeZoneId = userReportScheduleCreateDto.TimeZoneId;
+            schedule.IsActive = userReportScheduleCreateDto.IsActive;
+            
 
             _appDbContext.UserReportSchedules.Update(schedule);
             await _appDbContext.SaveChangesAsync();

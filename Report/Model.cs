@@ -1,15 +1,17 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using JobSearcher.Account;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JobSearcher.Report
 {
+
 
     public class UserReportSchedule
     {
         public int Id { get; set; }
 
         public int UserId { get; set; } = default!;
-
+        [ValidTimeZone]
         public string TimeZoneId { get; set; } = default!;
 
         public bool IsActive { get; set; } = true;
@@ -29,6 +31,14 @@ namespace JobSearcher.Report
 
     public class ReportCreateDto
     {
-         public TimeSpan LocalTime { get; set; }
+        public TimeSpan LocalTime { get; set; }
     }
+
+    public class UserReportScheduleCreateDto
+    {
+        [ValidTimeZone]
+        public required string TimeZoneId { get; set; }
+        public required bool IsActive { get; set; }
+    }
+    
 }

@@ -6,5 +6,7 @@
     new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
 }
 <div class="container">
-    <h3>Your searches:</h3> @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
+    <h3>Your searches:</h3> 
+    @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
+    @await Component.InvokeAsync("ReportScheduler")
 </div>
