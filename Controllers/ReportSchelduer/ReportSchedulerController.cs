@@ -100,9 +100,7 @@ namespace UserJobSearcher.Controllers
             try
             {
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-                if (user == null)
-                    return Unauthorized();
-
+         
                 await _reportRepository.CreateReportTimes(times, user.Id);
                 return Ok(new { success = true });
             }

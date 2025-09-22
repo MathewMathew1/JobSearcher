@@ -99,6 +99,7 @@ namespace JobSearcher.Report
         public async Task<UserReportSchedule?> GetScheduleAsync(int userId)
         {
             var schedule = await _appDbContext.UserReportSchedules
+                .Include(s => s.ReportTimes) 
                 .FirstOrDefaultAsync(s => s.UserId == userId);
             return schedule;
         }
