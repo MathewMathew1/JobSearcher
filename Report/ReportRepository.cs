@@ -85,10 +85,10 @@ namespace JobSearcher.Report
                 throw new InvalidOperationException("User schedule not found.");
             }
 
-  
+
             schedule.TimeZoneId = userReportScheduleCreateDto.TimeZoneId;
             schedule.IsActive = userReportScheduleCreateDto.IsActive;
-            
+
 
             _appDbContext.UserReportSchedules.Update(schedule);
             await _appDbContext.SaveChangesAsync();
@@ -99,9 +99,24 @@ namespace JobSearcher.Report
         public async Task<UserReportSchedule?> GetScheduleAsync(int userId)
         {
             var schedule = await _appDbContext.UserReportSchedules
-                .Include(s => s.ReportTimes) 
+                .Include(s => s.ReportTimes)
                 .FirstOrDefaultAsync(s => s.UserId == userId);
             return schedule;
+        }
+
+        public async Task<List<UserReportSchedule>> GetSchedulesBetweenIds(int lowerBoundId, int upperBound)
+        {
+            List<UserReportSchedule> schedules = await _appDbContext.UserReportSchedules
+            .Include(s => s.ReportTimes)
+            .Where(us => us.Id >= lowerBoundId && us.Id <= upperBound)
+            .ToListAsync();
+            return schedules;
+        }
+
+        public async Task<int> GetSchedulesAmount()
+        {
+            var count = await _appDbContext.UserReportSchedules.CountAsync();
+            return count;
         }
     }
 }

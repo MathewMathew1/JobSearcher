@@ -10,7 +10,7 @@ namespace JobSearcher.Job
         public string? ImageLink { get; set; }
     }
 
-    public class GlassDoorJobSearch
+    public class JobSearchModel
     {
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]

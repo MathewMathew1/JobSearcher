@@ -1,4 +1,4 @@
-@model JobSearcher.Job.GlassDoorJobSearch
+@model JobSearcher.Job.JobSearchModel
 @{
     ViewData["Title"] = "Jobs search";
 }
@@ -9,13 +9,13 @@
     </div>
     <p>
         <a class="btn btn-spoiler w-100 d-flex justify-content-between align-items-center border"
-            data-bs-toggle="collapse" href="#glassDoorJobSearch" role="button" aria-expanded="false"
-            aria-controls="glassDoorJobSearch">
+            data-bs-toggle="collapse" href="#JobSearchModel" role="button" aria-expanded="false"
+            aria-controls="JobSearchModel">
             GlassDoor Job Search
             <span class="arrow">▼</span>
         </a>
     </p>
-    <div class="collapse" id="glassDoorJobSearch">
+    <div class="collapse" id="JobSearchModel">
         <div class="card card-body">
             <form id="glassDoorForm" asp-controller="Job" asp-action="GetGlassDoorJobs" method="get">
                 <div class="mb-3">

@@ -6,9 +6,9 @@ namespace JobSearcher.Controllers;
 public class JobController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly IGlassDoorJobSearcher _glassDoorJobSearcher;
+    private readonly GlassDoorJobSearcher _glassDoorJobSearcher;
 
-    public JobController(ILogger<HomeController> logger, IGlassDoorJobSearcher glassDoorJobSearcher)
+    public JobController(ILogger<HomeController> logger, GlassDoorJobSearcher glassDoorJobSearcher)
     {
         _logger = logger;
         _glassDoorJobSearcher = glassDoorJobSearcher;
@@ -26,7 +26,7 @@ public class JobController : Controller
 
 
     [HttpGet]
-    public async Task<IActionResult> GetGlassDoorJobs(GlassDoorJobSearch search)
+    public async Task<IActionResult> GetGlassDoorJobs(JobSearchModel search)
     {
         try
         {

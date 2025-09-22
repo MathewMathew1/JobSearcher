@@ -3,9 +3,9 @@ using HtmlAgilityPack;
 
 namespace JobSearcher.Job
 {
-    public class GlassDoorJobSearcher : IGlassDoorJobSearcher
+    public class GlassDoorJobSearcher : IJobSearcherService
     {
-        public async Task<List<JobInfo>> GetJobOfferings(GlassDoorJobSearch search, int maxAmount = 10)
+        public async Task<List<JobInfo>> GetJobOfferings(JobSearchModel search, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
             using var playwright = await Playwright.CreateAsync();

@@ -42,8 +42,9 @@ builder.Services.AddScoped<IAccount, AccountMySql>();
 builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
-builder.Services.AddSingleton<IGlassDoorJobSearcher, GlassDoorJobSearcher>();
-
+builder.Services.AddSingleton<GlassDoorJobSearcher>();
+builder.Services.AddScoped<IGenerateReportService, GenerateReportService>();
+builder.Services.AddHostedService<ReportSetupBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
