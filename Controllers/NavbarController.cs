@@ -16,9 +16,8 @@ public class NavbarViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync()
     {
-
         var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
 
-        return View(user); 
+        return View(user);
     }
 }
