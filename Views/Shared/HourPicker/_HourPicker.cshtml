@@ -58,7 +58,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify(selectedHours),
                 success: function () {
-                    alert("Report times updated successfully.");
+                    addToast({ message: 'Saved hours successfully', type: 'success' })
                 },
                 error: function (xhr) {
                     console.error(xhr);
