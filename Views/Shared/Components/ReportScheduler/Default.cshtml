@@ -77,8 +77,9 @@
     }
 </div>
 
-
+<script src="~/js/toast.js" asp-append-version="true"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
         const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -117,8 +118,7 @@
                     document.getElementById("schedule-status").innerText = schedule.isActive ? "Active" : "Inactive";
                 },
                 error: function (xhr) {
-       
-                    alert('Error updating schedule: ' + xhr.responseJSON?.error || xhr.statusText);
+                    addToast({ message: 'Error updating schedule: ' + xhr.responseJSON?.error || xhr.statusText })       
                 }
             });
         });
@@ -143,8 +143,7 @@
                     $form.remove();
                 },
                 error: function (xhr) {
-
-                    alert('Error creating schedule: ' + xhr.responseJSON?.error || xhr.statusText);
+                    addToast({ message: 'Error creating schedule: ' + xhr.responseJSON?.error || xhr.statusText, type: "error" })    
                 }
             });
         });

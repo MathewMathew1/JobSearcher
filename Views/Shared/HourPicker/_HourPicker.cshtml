@@ -61,8 +61,7 @@
                     addToast({ message: 'Saved hours successfully', type: 'success' })
                 },
                 error: function (xhr) {
-                    console.error(xhr);
-                    alert('Error saving times: ' + xhr.responseJSON?.error || xhr.statusText);
+                    addToast({ message: 'Error saving times: ' + xhr.responseJSON?.error || xhr.statusText, type: "error" })
                 }
             });
         });

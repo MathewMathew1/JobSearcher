@@ -60,7 +60,9 @@
 </div>
 
 
+<script src="~/js/toast.js" asp-append-version="true"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
 
 <script type="application/javascript">
     $(function () {
@@ -95,6 +97,7 @@
 
 
             }).fail(function (xhr) {
+                 addToast({ message: 'Failed to create search', type: 'error' })
                 console.log(xhr)
             });
         })
@@ -118,8 +121,9 @@
                     let $noSearches = $list.find(".no-searches");
                     $noSearches.removeClass("d-none");
                 }
-
+                addToast({ message: 'Deleted search successfully', type: 'success' })
             }).fail(function (xhr) {
+                addToast({ message: 'Failed to delete search', type: 'error' })
                 console.log(xhr)
             });
         })
@@ -138,12 +142,13 @@
                 type: "PATCH",
                 data: data,
                 success: function (updated) {
-     
-                 
+                    
+                    addToast({ message: 'Updated search successfully', type: 'success' })
                     $form.closest("li").addClass("bg-success-subtle");
                     setTimeout(() => $form.closest("li").removeClass("bg-success-subtle"), 1000);
                 },
                 error: function (xhr) {
+                    addToast({ message: 'Failed to update search', type: 'error' })
                     console.log("Update failed:", xhr);
                 }
             });

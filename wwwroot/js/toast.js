@@ -1,8 +1,6 @@
-const toasts = [];
 
-export function addToast({ message, type = "info", duration = 115000 }) {
+function addToast({ message, type = "info", duration = 115000 }) {
     const container = document.getElementById("toasts-container");
-
     if (!container) return;
 
     const toast = document.createElement("div");
@@ -21,21 +19,13 @@ export function addToast({ message, type = "info", duration = 115000 }) {
     toast.style.display = "block";
 
     switch (type) {
-        case "success":
-            toast.style.backgroundColor = "#4caf50";
-            break;
-        case "error":
-            toast.style.backgroundColor = "#f44336";
-            break;
-        case "warning":
-            toast.style.backgroundColor = "#ff9800";
-            break;
-        default:
-            toast.style.backgroundColor = "#333";
+        case "success": toast.style.backgroundColor = "#4caf50"; break;
+        case "error": toast.style.backgroundColor = "#f44336"; break;
+        case "warning": toast.style.backgroundColor = "#ff9800"; break;
+        default: toast.style.backgroundColor = "#333";
     }
 
     container.appendChild(toast);
-    toasts.push(toast);
 
     requestAnimationFrame(() => {
         toast.style.opacity = "1";
@@ -47,8 +37,6 @@ export function addToast({ message, type = "info", duration = 115000 }) {
         toast.style.transform = "translateY(-20px)";
         setTimeout(() => {
             if (container.contains(toast)) container.removeChild(toast);
-            const index = toasts.indexOf(toast);
-            if (index > -1) toasts.splice(index, 1);
         }, 300);
     }, duration);
 }
