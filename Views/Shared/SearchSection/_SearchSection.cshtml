@@ -17,7 +17,15 @@
             @foreach (var search in Model.Searches)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>@search.JobSearched (@search.Location)</span>
+                    <form asp-controller="UserJobSearcher" asp-action="Update" id="update-form-@Model.Site-@search.Id"
+                        method="post" class="ajax-update d-flex flex-grow-1 me-2">
+                        <input type="hidden" name="id" value="@search.Id" />
+                        <input type="text" class="form-control me-2" name="JobSearched" value="@search.JobSearched"
+                            required />
+                        <input type="text" class="form-control me-2" name="Location" value="@search.Location" required />
+                        <button type="submit" class="btn btn-sm btn-success">Save</button>
+                    </form>
+
                     <form asp-controller="UserJobSearcher" asp-action="Delete" id="delete-form-@Model.Site-@search.Id"
                         method="post" class="mb-0 ajax-delete">
                         <input type="hidden" name="id" value="@search.Id" />
@@ -25,6 +33,7 @@
                     </form>
                 </li>
             }
+
 
 
             <li class="no-searches list-group-item text-muted @(Model.Searches.Count != 0 ? "d-none" : "")">No searches
@@ -106,7 +115,7 @@
                 $list.closest(".collapse").find(".alert.alert-warning").addClass("d-none");
 
                 if ($list.children("li").not(".no-searches").length === 0) {
-                     let $noSearches = $list.find(".no-searches");
+                    let $noSearches = $list.find(".no-searches");
                     $noSearches.removeClass("d-none");
                 }
 
@@ -115,4 +124,30 @@
             });
         })
     })
+    $(function () {
+        $(document).on('submit', 'form[id^="update-form-@Model.Site"]', function (e) {
+            e.preventDefault();
+
+            let $form = $(this);
+            let url = $form.attr("action");
+            let data = $form.serialize();
+            let id = $form.find("input[name='id']").val();
+
+            $.ajax({
+                url: url + "?id=" + id,
+                type: "PATCH",
+                data: data,
+                success: function (updated) {
+                    console.log("Updated:", updated);
+                 
+                    $form.closest("li").addClass("bg-success-subtle");
+                    setTimeout(() => $form.closest("li").removeClass("bg-success-subtle"), 1000);
+                },
+                error: function (xhr) {
+                    console.log("Update failed:", xhr);
+                }
+            });
+        });
+    });
+
 </script>
