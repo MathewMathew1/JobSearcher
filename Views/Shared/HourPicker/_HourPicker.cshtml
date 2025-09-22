@@ -5,7 +5,7 @@
     <div class="p-3 text-center">
         <h4>Select the hours you want to receive reports</h4>
     </div>
-    <div id="hours-grid" class="d-grid gap-1 p-3" style="grid-template-columns: repeat(6, 1fr);">
+    <div id="hours-grid" class="d-grid gap-1 p-3 hour-grid" >
         @for (int h = 0; h < 24; h++)
         {
             var isSelected = Model?.Any(t => t.LocalTime.Hours == h) ?? false;

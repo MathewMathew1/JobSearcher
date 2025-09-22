@@ -8,7 +8,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -21,41 +25,53 @@ body {
   margin-bottom: 60px;
 }
 
-.active{
+.active {
   background-color: #258cfb;
   color: white !important;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
 
 .job-item {
-    background-color: #f8f9fa; /* light gray */
-    transition: transform 0.2s, box-shadow 0.2s;
+  background-color: #f8f9fa; /* light gray */
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .job-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .job-name {
-    color: #1c3d5a;
-    font-size: 1.1rem;
+  color: #1c3d5a;
+  font-size: 1.1rem;
 }
 
 .job-description {
-    color: #4a4a4a;
-    font-size: 0.95rem;
+  color: #4a4a4a;
+  font-size: 0.95rem;
 }
 
-.jobOpening-list-small{
+.jobOpening-list-small {
   overflow: auto;
   max-height: 400px;
+}
+
+.hour-grid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+@media only screen and (max-width: 600px) {
+  .hour-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
