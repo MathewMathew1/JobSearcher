@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using JobSearcher.Models;
 using JobSearcher.Account;
 using JobSearcher.JobOpening;
+using JobSearcher.Report;
 
 namespace JobSearcher.Data
 {
@@ -13,6 +14,9 @@ namespace JobSearcher.Data
         public DbSet<UserInDatabase> Users { get; set; }
         public DbSet<JobOpeningSearcherModel> UserSearches { get; set; }
 
+        public DbSet<UserReportSchedule> UserReportSchedules { get; set; }
+        public DbSet<ReportTime> ReportTimes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,8 +25,45 @@ namespace JobSearcher.Data
             {
                 entity.HasIndex(e => e.UserId);
 
+                entity.HasOne(s => s.User)
+                      .WithMany(u => u.UserSearches) 
+                      .HasForeignKey(s => s.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
                 entity.HasIndex(e => new { e.UserId, e.Site, e.JobSearched, e.Location })
                     .IsUnique();
+            });
+
+            modelBuilder.Entity<UserReportSchedule>(entity =>
+            {
+                entity.HasIndex(e => e.UserId).IsUnique();
+
+                entity.Property(e => e.TimeZoneId)
+                    .IsRequired();
+
+                entity.HasOne(e => e.User)
+                    .WithOne()
+                    .HasForeignKey<UserReportSchedule>(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(e => e.ReportTimes)
+                    .WithOne(rt => rt.UserReportSchedule)
+                    .HasForeignKey(rt => rt.UserReportScheduleId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ReportTime>(entity =>
+            {
+                entity.Property(rt => rt.LocalTime)
+                        .IsRequired();
+
+                entity.HasIndex(rt => new { rt.UserReportScheduleId, rt.LocalTime })
+                        .IsUnique();
+
+                entity.HasOne(rt => rt.UserReportSchedule)
+                    .WithMany(urs => urs.ReportTimes)
+                    .HasForeignKey(rt => rt.UserReportScheduleId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

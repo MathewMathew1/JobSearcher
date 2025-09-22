@@ -33,8 +33,7 @@ namespace UserJobSearcher.Controllers
                 if (user == null)
                     return RedirectToAction("Login", "Home");
 
-                var searches = await _searcher.GetSearchesByUser(user.Id);
-                return View(searches);
+                return View(user.UserSearches);
             }
             catch (Exception e)
             {
@@ -54,8 +53,7 @@ namespace UserJobSearcher.Controllers
                 if (user == null)
                     return Unauthorized();
 
-                var existing = await _searcher.GetSearchesByUserAndSite(user.Id, searchInfo.Site);
-                if (existing.Count >= 3)
+                if (user.UserSearches.Count >= 3)
                     return BadRequest(new { error = "Maximum of 3 searches allowed for this site." });
 
                 var created = await _searcher.CreateJobOpeningSearch(searchInfo, user.Id);

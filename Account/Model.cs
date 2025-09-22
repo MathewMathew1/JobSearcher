@@ -1,3 +1,5 @@
+using JobSearcher.JobOpening;
+
 namespace JobSearcher.Account
 {
     public class User
@@ -10,5 +12,6 @@ namespace JobSearcher.Account
     public class UserInDatabase : User
     {
         public int Id { get; set; }
+        public ICollection<JobOpeningSearcherModel> UserSearches { get; set; } = new List<JobOpeningSearcherModel>();
     }
 }

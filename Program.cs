@@ -5,6 +5,7 @@ using JobSearcher.Data;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using JobSearcher.Jwt;
+using JobSearcher.Report;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -41,8 +42,10 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<IAccount, AccountMySql>();
 builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IGlassDoorJobSearcher, GlassDoorJobSearcher>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
