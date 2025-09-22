@@ -75,8 +75,6 @@ namespace JobSearcher.Data
                 entity.Property(e => e.DataJson)
                       .IsRequired();
 
-                entity.Property(e => e.Site)
-                      .IsRequired();
 
                 entity.Property(e => e.CreatedAt)
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
