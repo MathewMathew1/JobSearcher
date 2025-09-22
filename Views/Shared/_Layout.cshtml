@@ -16,8 +16,9 @@
         @await Component.InvokeAsync("Navbar")
 
     </header>
+    <div id="toasts-container" style="position: fixed; bottom: 10px; right: 0px; z-index: 9999;"></div>
     <div class="container">
-        <div id="toasts-container" style="position: fixed; top: 210px; left: 210px; z-index: 9999;"></div>
+        
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
