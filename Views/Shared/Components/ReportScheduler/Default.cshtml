@@ -41,6 +41,8 @@
                     <button id="update-schedule-btn" class="btn btn-success">Update Schedule</button>
                 </div>
             </div>
+
+            @await Html.PartialAsync("HourPicker/_HourPicker", Model.ReportTimes)
         </div>
 
 
