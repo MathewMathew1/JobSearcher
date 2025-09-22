@@ -15,8 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-Console.WriteLine(builder.Configuration["Authentication:Google:ClientId"]);
-Console.WriteLine(builder.Configuration["Authentication:Google:ClientSecret"]);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

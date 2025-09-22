@@ -35,7 +35,6 @@ public class JobController : Controller
                 return BadRequest(ModelState);
             }
             var jobs = await _glassDoorJobSearcher.GetJobOfferings(search);
-            _logger.LogInformation($"jobs amount {jobs.Count}");
 
             return PartialView("JobOpening/_JobOpeningList", jobs);
         }

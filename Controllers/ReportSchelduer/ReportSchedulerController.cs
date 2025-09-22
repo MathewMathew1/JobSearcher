@@ -39,7 +39,7 @@ namespace UserJobSearcher.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error retrieving schedule for user {UserId}", userId);
+
                 return StatusCode(500, new { error = "Unexpected error retrieving schedule." });
             }
         }

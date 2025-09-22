@@ -92,7 +92,7 @@
             opt.text = tz;
             if (tz === browserTz) opt.selected = true;
             const secondOpt = opt.cloneNode(true)
-            console.log(tzSelectUpdate)
+   
             if(tzSelect){
                 tzSelect.appendChild(opt);
             }
@@ -117,7 +117,7 @@
                     document.getElementById("schedule-status").innerText = schedule.isActive ? "Active" : "Inactive";
                 },
                 error: function (xhr) {
-                    console.error(xhr);
+       
                     alert('Error updating schedule: ' + xhr.responseJSON?.error || xhr.statusText);
                 }
             });
@@ -143,7 +143,7 @@
                     $form.remove();
                 },
                 error: function (xhr) {
-                    console.log(xhr)
+
                     alert('Error creating schedule: ' + xhr.responseJSON?.error || xhr.statusText);
                 }
             });

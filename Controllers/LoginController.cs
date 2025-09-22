@@ -58,7 +58,7 @@ namespace JobSearcher.Controllers
                     ProfilePicture = principal.FindFirst("picture")?.Value ?? string.Empty
                 };
 
-                _logger.LogInformation("User {Name} with email {Email} logged in.", user.Name, user.Email);
+
 
                 var userInDb = await _account.GetUser(user.Email);
 

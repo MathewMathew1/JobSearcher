@@ -94,7 +94,6 @@ namespace UserJobSearcher.Controllers
         {
             try
             {
-                _logger.LogInformation("trying to delete");
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account)!;
 
                 await _searcher.DeleteSearchById(id, user.Id);

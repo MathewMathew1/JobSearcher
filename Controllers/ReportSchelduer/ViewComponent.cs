@@ -30,6 +30,7 @@ public class ReportSchedulerViewComponent : ViewComponent
                 return Content("User not logged in");
 
             var schedule = await _reportRepository.GetScheduleAsync(user.Id);
+            _logger.LogInformation($"Amount of hours {schedule.ReportTimes.Count}");
             return View(schedule); 
         }
         catch (Exception ex)

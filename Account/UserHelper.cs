@@ -6,7 +6,7 @@ namespace JobSearcher.Account
         {
             if (context.Items["CurrentUser"] is UserInDatabase user)
                 return user;
-            Console.WriteLine($"{context.Items["UserId"]}");
+      
             if (context.Items["UserId"] is not int userId)
                 return null;
 
