@@ -67,10 +67,14 @@ namespace JobSearcher.Controllers
                 {
                     var userCreated = await _account.SetUser(user);
                     jwtToken = _jwtService.GenerateToken(userCreated.Id);
+                    HttpContext.Items["UserId"] = userCreated.Id;
+                    HttpContext.Items["CurrentUser"] = userCreated;
                 }
                 else
                 {
                     jwtToken = _jwtService.GenerateToken(userInDb.Id);
+                    HttpContext.Items["UserId"] = userInDb.Id;
+                    HttpContext.Items["CurrentUser"] = userInDb;
                 }
 
                 Response.Cookies.Append("jwt_token", jwtToken, new CookieOptions
@@ -80,6 +84,8 @@ namespace JobSearcher.Controllers
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTimeOffset.UtcNow.AddMinutes(60)
                 });
+
+
 
                 return RedirectToAction("Index", "Home");
             }
