@@ -34,10 +34,25 @@
                 <hr class="dropdown-divider" />
               </li>
               <li>
-              <a class="dropdown-item" asp-controller="UserJobSearcher" asp-action="Index">Job Searcher</a>
+                <a class="dropdown-item" asp-controller="UserJobSearcher" asp-action="Index">Job Searcher</a>
               </li>
               <li><a class="dropdown-item" asp-controller="Login" asp-action="Logout">Logout</a></li>
-              
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserReport" ? "active" : "")"
+                  asp-controller="UserReport" asp-action="Index">
+                  Reports
+                  @{
+                    var unseenCount = Model.UserReports.Count(r => !r.SeenByUser);
+                    if (unseenCount > 0)
+                    {
+                      <span class="badge rounded-pill bg-danger ms-2">
+                        @unseenCount
+                      </span>
+                    }
+                  }
+                </a>
+              </li>
+
             </ul>
           </li>
         }

@@ -80,7 +80,7 @@ namespace JobSearcher.Data
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne<UserInDatabase>()
-                      .WithMany()
+                      .WithMany(u => u.UserReports) 
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
