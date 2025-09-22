@@ -55,7 +55,8 @@ namespace JobSearcher.Report
                                                     IGenerateReportService generateReportService,
                                                     CancellationToken stoppingToken)
         {
-            var totalSchedules = await reportRepository.GetSchedulesAmount();
+            _currentLowerBound = 1;
+            var totalSchedules = await reportRepository.GetHighestScheduleIdAsync() ?? 1;
             if (totalSchedules == 0) return;
 
             int threadCount = (int)Math.Ceiling((double)totalSchedules / ChunkSize);

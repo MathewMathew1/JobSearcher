@@ -113,6 +113,12 @@ namespace JobSearcher.Report
             return schedules;
         }
 
+        public async Task<int?> GetHighestScheduleIdAsync()
+        {
+            return await _appDbContext.UserReportSchedules
+                .MaxAsync(s => (int?)s.Id); 
+        }
+
         public async Task<int> GetSchedulesAmount()
         {
             var count = await _appDbContext.UserReportSchedules.CountAsync();

@@ -8,5 +8,6 @@ namespace JobSearcher.Report
         Task<UserReportSchedule?> GetScheduleAsync(int userId);
         Task<int> GetSchedulesAmount();
         Task<List<UserReportSchedule>> GetSchedulesBetweenIds(int lowerBoundId, int upperBound);
+        Task<int?> GetHighestScheduleIdAsync();
     }
 }
