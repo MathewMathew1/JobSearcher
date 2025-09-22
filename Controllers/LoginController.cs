@@ -96,5 +96,32 @@ namespace JobSearcher.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            try
+            {
+                HttpContext.Items["UserId"] = null;
+                HttpContext.Items["CurrentUser"] = null;
+
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/"
+                };
+
+                Response.Cookies.Delete("jwt_token", cookieOptions);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during Logout");
+                return StatusCode(500, new { error = "Unexpected error try again" });
+            }
+        }
+
     }
 }
