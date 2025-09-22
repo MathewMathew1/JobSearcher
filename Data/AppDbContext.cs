@@ -3,6 +3,7 @@ using JobSearcher.Models;
 using JobSearcher.Account;
 using JobSearcher.JobOpening;
 using JobSearcher.Report;
+using JobSearcher.UserReport;
 
 namespace JobSearcher.Data
 {
@@ -16,6 +17,7 @@ namespace JobSearcher.Data
 
         public DbSet<UserReportSchedule> UserReportSchedules { get; set; }
         public DbSet<ReportTime> ReportTimes { get; set; }
+        public DbSet<UserReportModel> UserReports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,7 +28,7 @@ namespace JobSearcher.Data
                 entity.HasIndex(e => e.UserId);
 
                 entity.HasOne(s => s.User)
-                      .WithMany(u => u.UserSearches) 
+                      .WithMany(u => u.UserSearches)
                       .HasForeignKey(s => s.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
@@ -64,6 +66,25 @@ namespace JobSearcher.Data
                     .WithMany(urs => urs.ReportTimes)
                     .HasForeignKey(rt => rt.UserReportScheduleId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<UserReportModel>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.DataJson)
+                      .IsRequired();
+
+                entity.Property(e => e.Site)
+                      .IsRequired();
+
+                entity.Property(e => e.CreatedAt)
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasOne<UserInDatabase>()
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
