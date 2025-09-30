@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using JobSearcher.UserReport;
+using JobSearcher.UserSearchLink;
 
 namespace JobSearcher.Report
 {
@@ -10,6 +11,7 @@ namespace JobSearcher.Report
         private readonly ILogger<GenerateReportService> _logger;
         private readonly IUserReportService _userReportService;
         private readonly IJobOpeningSearcher _jobOpeningSearcher;
+        private readonly IUserFetchedLinkRepository _userFetchedLinkRepository;
         private readonly IDictionary<Site, IJobSearcherService> _searcherServices = new Dictionary<Site, IJobSearcherService>();
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher, GlassDoorJobSearcher glassDoorJobSearcher)
@@ -27,6 +29,13 @@ namespace JobSearcher.Report
 
             var resultsBySite = new ConcurrentDictionary<Site, List<JobInfo>>();
 
+            var searchedLinks = await _userFetchedLinkRepository.GetAllLinksAsync(userId);
+            SearchedLink searchedLink = new SearchedLink
+            {
+                SearchedInDatabase = searchedLinks,
+                NewLinks = new ConcurrentBag<string>()
+            };
+
             foreach (var search in searches.Where(s => s.IsActive))
             {
                 if (!_searcherServices.TryGetValue(search.Site, out var service))
@@ -35,11 +44,13 @@ namespace JobSearcher.Report
                     continue;
                 }
 
+
+
                 var jobs = await service.GetJobOfferings(new JobSearchModel
                 {
                     JobSearched = search.JobSearched,
                     Location = search.Location
-                });
+                }, searchedLink);
 
                 resultsBySite.AddOrUpdate(
                     search.Site,
@@ -53,7 +64,7 @@ namespace JobSearcher.Report
 
             await _userReportService.AddUserReport(resultsBySite, userId);
             _logger.LogInformation("Generated report for user {UserId}, {Sites} sites processed", userId, resultsBySite.Count);
- 
+
         }
     }
 }

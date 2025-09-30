@@ -5,7 +5,9 @@ namespace JobSearcher.Job
 {
     public class GlassDoorJobSearcher : IJobSearcherService
     {
-        public async Task<List<JobInfo>> GetJobOfferings(JobSearchModel search, int maxAmount = 10)
+        private readonly object _lock = new();
+
+        public async Task<List<JobInfo>> GetJobOfferings(JobSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
             using var playwright = await Playwright.CreateAsync();
@@ -33,6 +35,16 @@ namespace JobSearcher.Job
                 {
                     var titleNode = node.SelectSingleNode(".//a[contains(@class,'JobCard_jobTitle')]");
                     var link = titleNode?.GetAttributeValue("href", "");
+
+                    lock (_lock)
+                    {
+                        if (link == null || searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                        {
+                            continue;
+                        }
+
+                        searchedLinks.NewLinks.Add(link);
+                    }
                     var title = titleNode?.InnerText.Trim();
                     var employer = node.SelectSingleNode(".//span[contains(@class,'EmployerProfile_compactEmployerName')]")?.InnerText.Trim();
                     var location = node.SelectSingleNode(".//div[@data-test='emp-location']")?.InnerText.Trim();

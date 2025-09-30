@@ -34,7 +34,7 @@ public class JobController : Controller
             {
                 return BadRequest(ModelState);
             }
-            var jobs = await _glassDoorJobSearcher.GetJobOfferings(search);
+            var jobs = await _glassDoorJobSearcher.GetJobOfferings(search, new SearchedLink());
 
             return PartialView("JobOpening/_JobOpeningList", jobs);
         }
