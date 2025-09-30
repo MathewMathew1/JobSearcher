@@ -23,10 +23,22 @@ namespace UserJobSearcher.Controllers
         {
             var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
             if (user == null)
-                return Unauthorized();
+            {
+                return RedirectToAction("Login", "Home");
+            }
 
             var reports = await _reportRepository.GetUserReportsAsync(user.Id);
             return View(reports);
         }
+
+        [HttpPost("MarkSeen")]
+        public async Task<IActionResult> MarkSeen(int id)
+        {
+            var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
+            await _reportRepository.MarkReportAsSeen(id, user.Id);
+
+            return Ok();
+        }
+
     }
 }

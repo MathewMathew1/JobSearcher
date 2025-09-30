@@ -22,19 +22,31 @@ else
         {
             var report = Model[r].Report;
             var data = Model[r].Data;
-                 var isNew = Model[r].Report.SeenByUser == false;
+            var isNew = Model[r].Report.SeenByUser == false;
+            var collapseId = $"collapse-{report.Id}";
+            var headingId = $"heading-{report.Id}";
 
             <div class="accordion-item mb-3">
-                <h2 class="accordion-header" id="heading-@r"> <button class="accordion-button collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapse-@r" aria-expanded="false"
-                        aria-controls="collapse-@r">
-                        Report @report.CreatedAt.ToString("g")      @if (isNew)
-                                                {
-                                                    <span class="badge bg-danger ms-2">New</span>
-                                                } </button> </h2>
-                <div id="collapse-@r" class="accordion-collapse collapse" aria-labelledby="heading-@r"
-                    data-bs-parent="#reportsAccordion">
-                    <div class="accordion-body">
+                <h2 class="accordion-header" id="@headingId">
+                <button class="accordion-button collapsed @(report.SeenByUser ? "" : "unseen-report")"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#@collapseId"
+                        aria-expanded="false"
+                        aria-controls="@collapseId"
+                        data-report-id="@report.Id">
+                    Report @report.CreatedAt.ToString("g")
+                    @if (!report.SeenByUser)
+                    {
+                        <span class="badge bg-danger ms-2">New</span>
+                    }
+                </button>
+            </h2>
+           <div id="@collapseId"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="@headingId"
+                 data-bs-parent="#reportsAccordion">
+                <div class="accordion-body">
                         @if (data == null || data.Count == 0)
                         {
                             <p>No site data.</p>
@@ -86,3 +98,33 @@ else
         }
      </div>
 }
+
+@section Scripts {
+
+
+<script>
+    $(document).on('show.bs.collapse', '.accordion-collapse', function () {
+  
+        var button = $(this).prev().find('.accordion-button.unseen-report');
+
+        if (button.length) {
+    
+            var reportId = button.data('report-id');
+            $.ajax({
+                url: '/UserReport/MarkSeen',
+                method: 'POST',
+                data: { id: reportId },
+                success: function () {
+                    button.removeClass('unseen-report');
+
+                },
+                error(e){
+                    console.error("Error marking report as seen:", e);
+                }
+            });
+        }
+    });
+</script>
+
+}
+

@@ -31,7 +31,9 @@ namespace UserJobSearcher.Controllers
             {
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
                 if (user == null)
+                {
                     return RedirectToAction("Login", "Home");
+                }
 
                 return View(user.UserSearches);
             }
