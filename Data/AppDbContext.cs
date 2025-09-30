@@ -19,6 +19,8 @@ namespace JobSearcher.Data
         public DbSet<ReportTime> ReportTimes { get; set; }
         public DbSet<UserReportModel> UserReports { get; set; }
 
+        public DbSet<UserFetchedLink> UserFetchedLinks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -80,9 +82,28 @@ namespace JobSearcher.Data
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne<UserInDatabase>()
-                      .WithMany(u => u.UserReports) 
+                      .WithMany(u => u.UserReports)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<UserFetchedLink>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Link)
+                        .IsRequired();
+
+                entity.Property(e => e.FetchedAt)
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasIndex(e => new { e.UserId, e.Link })
+                        .IsUnique();
+
+                entity.HasOne(e => e.User)
+                        .WithMany()
+                        .HasForeignKey(e => e.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
