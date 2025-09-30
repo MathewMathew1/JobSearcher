@@ -41,12 +41,15 @@ builder.Services.AddAuthentication(options =>
     options.CallbackPath = "/signin-google";
 });
 builder.Services.AddScoped<IAccount, AccountMySql>();
+
 builder.Services.AddScoped<IUserFetchedLinkRepository, UserFetchedLinkRepository>();
 builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<GlassDoorJobSearcher>();
 builder.Services.AddSingleton<IndeedJobSearcher>();
+builder.Services.AddScoped<IndeedJobSearcherAdapter>();
+builder.Services.AddScoped<GlassDoorJobSearchAdapter>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddScoped<IGenerateReportService, GenerateReportService>();
 builder.Services.AddHostedService<ReportSetupBackgroundService>();

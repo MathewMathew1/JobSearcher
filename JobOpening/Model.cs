@@ -20,6 +20,12 @@ namespace JobSearcher.JobOpening
         public required string JobSearched { get; set; }
         public required bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [StringLength(10)]
+        public string? CountryCode { get; set; } 
+        [StringLength(20)]
+        public string? Sort { get; set; }        
+
+        public int? Start { get; set; }
     }
 
     public class SearchInfo()
@@ -38,7 +44,8 @@ namespace JobSearcher.JobOpening
         public required Site Site { get; set; }
 
         public bool IsActive { get; set; } = false;
+        public string? CountryCode { get; set; }
     }
 
-    
+
 }

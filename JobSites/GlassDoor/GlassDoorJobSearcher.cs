@@ -3,11 +3,11 @@ using HtmlAgilityPack;
 
 namespace JobSearcher.Job
 {
-    public class GlassDoorJobSearcher : IJobSearcherService
+    public class GlassDoorJobSearcher : IJobSearcherService<GlassDoorSearchModel>
     {
         private readonly object _lock = new();
 
-        public async Task<List<JobInfo>> GetJobOfferings(JobSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
+        public async Task<List<JobInfo>> GetJobOfferings(GlassDoorSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
             using var playwright = await Playwright.CreateAsync();

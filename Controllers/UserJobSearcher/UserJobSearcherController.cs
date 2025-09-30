@@ -37,7 +37,7 @@ namespace UserJobSearcher.Controllers
                 _logger.LogInformation($"User {user.Email} has {user.UserSearches.Count} searches.");
                 foreach (var search in user.UserSearches)
                 {
-                    _logger.LogInformation($"User Search: {search.JobSearched} in {search.Location} on {search.Site}");
+                    _logger.LogInformation($"User Search: {search.JobSearched} in {search.Location} on {search.Site} and {search.CountryCode}");
                 }
                 return View(user.UserSearches);
             }
@@ -60,7 +60,9 @@ namespace UserJobSearcher.Controllers
                     return Unauthorized();
 
                 if (user.UserSearches.Count >= 3)
+                {
                     return BadRequest(new { error = "Maximum of 3 searches allowed for this site." });
+                }
 
                 var created = await _searcher.CreateJobOpeningSearch(searchInfo, user.Id);
 
@@ -81,7 +83,7 @@ namespace UserJobSearcher.Controllers
             try
             {
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-
+                _logger.LogInformation($"Update {searchInfo.CountryCode}");
                 var updated = await _searcher.UpdateJobOpeningSearch(searchInfo, id, user.Id);
                 return updated == null
                     ? NotFound(new { error = "Search not found." })

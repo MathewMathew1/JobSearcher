@@ -19,12 +19,23 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <form asp-controller="UserJobSearcher" asp-action="Update" id="update-form-@Model.Site-@search.Id"
                         method="post" class="ajax-update d-flex flex-grow-1 me-2">
+                        <input type="hidden" name="site" value="@search.Site" />    
                         <input type="hidden" name="id" value="@search.Id" />
+
                         <input type="text" class="form-control me-2" name="JobSearched" value="@search.JobSearched"
                             required />
+
                         <input type="text" class="form-control me-2" name="Location" value="@search.Location" required />
+
+                        @if (Model.Site == Site.Indeed)
+                        {
+                            <input type="text" class="form-control me-2" name="CountryCode" value="@search.CountryCode"
+                                placeholder="Country code" required />
+                        }
+
                         <button type="submit" class="btn btn-sm btn-success">Save</button>
                     </form>
+
 
                     <form asp-controller="UserJobSearcher" asp-action="Delete" id="delete-form-@Model.Site-@search.Id"
                         method="post" class="mb-0 ajax-delete">
@@ -44,14 +55,26 @@
         <form asp-controller="UserJobSearcher" asp-action="Create" method="post" id="formCreateSearch-@Model.Site"
             class="form-create-search @(Model.CanAddMore ? "" : "d-none")" data-site="@Model.Site">
             <input type="hidden" name="Site" value="@Model.Site" />
+
             <div class="mb-2">
                 <input type="text" class="form-control" name="JobSearched" placeholder="Job title" required />
             </div>
+
             <div class="mb-2">
                 <input type="text" class="form-control" name="Location" placeholder="Location" required />
             </div>
+
+            @if (Model.Site == Site.Indeed)
+            {
+                <div class="mb-2">
+                    <input type="text" class="form-control" name="CountryCode"
+                        placeholder="Country code (e.g. pl.indeed.com)" required />
+                </div>
+            }
+
             <button type="submit" class="btn btn-primary">Add Search</button>
         </form>
+
 
         <div class="alert alert-warning @(Model.CanAddMore ? "d-none" : "")">
             Maximum of 3 searches reached for @Model.Site.
@@ -97,7 +120,7 @@
 
 
             }).fail(function (xhr) {
-                 addToast({ message: 'Failed to create search', type: 'error' })
+                addToast({ message: 'Failed to create search', type: 'error' })
                 console.log(xhr)
             });
         })
@@ -142,7 +165,7 @@
                 type: "PATCH",
                 data: data,
                 success: function (updated) {
-                    
+
                     addToast({ message: 'Updated search successfully', type: 'success' })
                     $form.closest("li").addClass("bg-success-subtle");
                     setTimeout(() => $form.closest("li").removeClass("bg-success-subtle"), 1000);

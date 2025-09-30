@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using JobSearcher.JobOpening;
 
 namespace JobSearcher.Job
 {
@@ -12,6 +13,7 @@ namespace JobSearcher.Job
 
     public class JobSearchModel
     {
+
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "JobSearched must be between 3 and 100 characters.")]
@@ -21,5 +23,23 @@ namespace JobSearcher.Job
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers and spaces allowed.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "JobSearched must be between 3 and 100 characters.")]
         public required string Location { get; set; }
+        public int Start { get; set; }
+    }
+
+    public class IndeedSearchModel : JobSearchModel
+    {
+        public required string CountryCode { get; set; }
+        public string? Sort { get; set; }
+    }
+
+    public class GlassDoorSearchModel : JobSearchModel
+    {
+
+    }
+
+    public interface IJobSearcherAdapter
+    {
+        Site Site { get; }
+        Task<List<JobInfo>> GetJobOfferings(JobOpeningSearcherModel search, SearchedLink searchedLinks);
     }
 }

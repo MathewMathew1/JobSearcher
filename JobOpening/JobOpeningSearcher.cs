@@ -22,6 +22,7 @@ namespace JobSearcher.JobOpening
                 Site = searchInfo.Site,
                 Location = searchInfo.Location,
                 JobSearched = searchInfo.JobSearched,
+                CountryCode = searchInfo.CountryCode,
                 IsActive = true
             };
 
@@ -33,13 +34,16 @@ namespace JobSearcher.JobOpening
 
         public async Task<JobOpeningSearcherModel> UpdateJobOpeningSearch(SearchInfo searchInfo, int id, int UserId)
         {
-            JobOpeningSearcherModel searchInfoInDatabase = _database.UserSearches.FirstOrDefault(uS => uS.Id == id && uS.UserId == UserId);
+            JobOpeningSearcherModel? searchInfoInDatabase = _database.UserSearches.FirstOrDefault(uS => uS.Id == id && uS.UserId == UserId);
             if (searchInfoInDatabase == null)
+            {
                 return null;
+            }
 
             searchInfoInDatabase.Site = searchInfo.Site;
             searchInfoInDatabase.Location = searchInfo.Location;
             searchInfoInDatabase.JobSearched = searchInfo.JobSearched;
+            searchInfoInDatabase.CountryCode = searchInfo.CountryCode;
 
             await _database.SaveChangesAsync();
 

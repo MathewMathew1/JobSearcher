@@ -26,7 +26,7 @@ public class JobController : Controller
 
 
     [HttpGet]
-    public async Task<IActionResult> GetGlassDoorJobs(JobSearchModel search)
+    public async Task<IActionResult> GetGlassDoorJobs(GlassDoorSearchModel search)
     {
         try
         {

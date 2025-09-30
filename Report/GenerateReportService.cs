@@ -12,17 +12,17 @@ namespace JobSearcher.Report
         private readonly IUserReportService _userReportService;
         private readonly IJobOpeningSearcher _jobOpeningSearcher;
         private readonly IUserFetchedLinkRepository _userFetchedLinkRepository;
-        private readonly IDictionary<Site, IJobSearcherService> _searcherServices = new Dictionary<Site, IJobSearcherService>();
+        private readonly IDictionary<Site, IJobSearcherAdapter> _searcherAdapters = new Dictionary<Site, IJobSearcherAdapter>();
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
-        GlassDoorJobSearcher glassDoorJobSearcher, IUserFetchedLinkRepository userFetchedLinkRepository, IndeedJobSearcher indeedJobSearcher)
+        GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IUserFetchedLinkRepository userFetchedLinkRepository, IndeedJobSearcherAdapter indeedJobSearcherAdapter)
         {
             _logger = logger;
             _userReportService = userReportService;
             _jobOpeningSearcher = jobOpeningSearcher;
 
-            _searcherServices.Add(Site.GlassDoor, glassDoorJobSearcher);
-            _searcherServices.Add(Site.Indeed, indeedJobSearcher);
+            _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
+            _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
             _userFetchedLinkRepository = userFetchedLinkRepository;
         }
 
@@ -41,19 +41,13 @@ namespace JobSearcher.Report
 
             foreach (var search in searches.Where(s => s.IsActive))
             {
-                if (!_searcherServices.TryGetValue(search.Site, out var service))
+                if (!_searcherAdapters.TryGetValue(search.Site, out var service))
                 {
                     _logger.LogWarning("No search service registered for site {Site}", search.Site);
                     continue;
                 }
 
-
-
-                var jobs = await service.GetJobOfferings(new JobSearchModel
-                {
-                    JobSearched = search.JobSearched,
-                    Location = search.Location
-                }, searchedLink);
+                var jobs = await service.GetJobOfferings(search, searchedLink);
 
                 resultsBySite.AddOrUpdate(
                     search.Site,
