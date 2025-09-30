@@ -4,6 +4,7 @@ using JobSearcher.Account;
 using JobSearcher.JobOpening;
 using JobSearcher.Report;
 using JobSearcher.UserReport;
+using JobSearcher.UserSearchLink;
 
 namespace JobSearcher.Data
 {

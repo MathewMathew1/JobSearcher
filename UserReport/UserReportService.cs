@@ -73,7 +73,7 @@ namespace JobSearcher.UserReport
                 query = query.Where(r => r.SeenByUser == seenByUser.Value);
             }
 
-            var reports = await query.ToListAsync();
+            var reports = await query.OrderByDescending(r => r.CreatedAt).ToListAsync();
 
             var result = new List<(UserReportModel, ConcurrentDictionary<Site, List<JobInfo>>)>();
 

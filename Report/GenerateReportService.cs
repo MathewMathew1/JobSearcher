@@ -14,13 +14,15 @@ namespace JobSearcher.Report
         private readonly IUserFetchedLinkRepository _userFetchedLinkRepository;
         private readonly IDictionary<Site, IJobSearcherService> _searcherServices = new Dictionary<Site, IJobSearcherService>();
 
-        public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher, GlassDoorJobSearcher glassDoorJobSearcher)
+        public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
+        GlassDoorJobSearcher glassDoorJobSearcher, IUserFetchedLinkRepository userFetchedLinkRepository)
         {
             _logger = logger;
             _userReportService = userReportService;
             _jobOpeningSearcher = jobOpeningSearcher;
 
             _searcherServices.Add(Site.GlassDoor, glassDoorJobSearcher);
+            _userFetchedLinkRepository = userFetchedLinkRepository;
         }
 
         public async Task GenerateReportForUser(int userId)
@@ -61,7 +63,7 @@ namespace JobSearcher.Report
                         return existing;
                     });
             }
-
+            _ = _userFetchedLinkRepository.SaveLinksAsync(userId, searchedLink.NewLinks);
             await _userReportService.AddUserReport(resultsBySite, userId);
             _logger.LogInformation("Generated report for user {UserId}, {Sites} sites processed", userId, resultsBySite.Count);
 

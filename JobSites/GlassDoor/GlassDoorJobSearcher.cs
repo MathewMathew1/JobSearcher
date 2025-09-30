@@ -24,43 +24,65 @@ namespace JobSearcher.Job
 
             await page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 });
 
-            var content = await page.ContentAsync();
-            var doc = new HtmlDocument();
-            doc.LoadHtml(content);
+            int totalCollected = 0;
 
-            var nodes = doc.DocumentNode.SelectNodes("//li[@data-test='jobListing']");
-            if (nodes != null)
+
+            while (totalCollected < maxAmount)
             {
-                foreach (var node in nodes.Take(maxAmount))
-                {
-                    var titleNode = node.SelectSingleNode(".//a[contains(@class,'JobCard_jobTitle')]");
-                    var link = titleNode?.GetAttributeValue("href", "");
+                await page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 });
+                var content = await page.ContentAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(content);
 
-                    lock (_lock)
+                var nodes = doc.DocumentNode.SelectNodes("//li[@data-test='jobListing']");
+                if (nodes != null)
+                {
+                    foreach (var node in nodes)
                     {
-                        if (link == null || searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                        if (totalCollected >= maxAmount)
+                            break;
+
+                        var titleNode = node.SelectSingleNode(".//a[contains(@class,'JobCard_jobTitle')]");
+                        var link = titleNode?.GetAttributeValue("href", "");
+
+                        lock (_lock)
                         {
-                            continue;
+                            if (link == null || searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                                continue;
+
+                            searchedLinks.NewLinks.Add(link);
                         }
 
-                        searchedLinks.NewLinks.Add(link);
+                        var title = titleNode?.InnerText.Trim();
+                        var employer = node.SelectSingleNode(".//span[contains(@class,'EmployerProfile_compactEmployerName')]")?.InnerText.Trim();
+                        var location = node.SelectSingleNode(".//div[@data-test='emp-location']")?.InnerText.Trim();
+                        var salary = node.SelectSingleNode(".//div[@data-test='detailSalary']")?.InnerText.Trim();
+                        var img = node.SelectSingleNode(".//img[contains(@class,'avatar-base_Image')]")?.GetAttributeValue("src", null);
+
+                        jobs.Add(new JobInfo
+                        {
+                            Name = title ?? "Unknown",
+                            Link = link?.StartsWith("http") == true ? link : "https://www.glassdoor.com" + link,
+                            Description = $"{employer} | {location} | {salary}",
+                            ImageLink = img
+                        });
+
+                        totalCollected++;
                     }
-                    var title = titleNode?.InnerText.Trim();
-                    var employer = node.SelectSingleNode(".//span[contains(@class,'EmployerProfile_compactEmployerName')]")?.InnerText.Trim();
-                    var location = node.SelectSingleNode(".//div[@data-test='emp-location']")?.InnerText.Trim();
-                    var salary = node.SelectSingleNode(".//div[@data-test='detailSalary']")?.InnerText.Trim();
-                    var img = node.SelectSingleNode(".//img[contains(@class,'avatar-base_Image')]")?.GetAttributeValue("src", null);
-
-                    jobs.Add(new JobInfo
-                    {
-                        Name = title ?? "Unknown",
-                        Link = link?.StartsWith("http") == true ? link : "https://www.glassdoor.com" + link,
-                        Description = $"{employer} | {location} | {salary}",
-                        ImageLink = img
-                    });
                 }
-            }
 
+                var seeMoreButton = await page.QuerySelectorAsync("button[data-test='seeMoreJobs']");
+                if (seeMoreButton == null) {
+                    break;
+                }
+
+                if (totalCollected < maxAmount)
+                {
+                    await seeMoreButton.ClickAsync();
+                    await page.WaitForTimeoutAsync(2000);
+                }
+
+            }
 
             return jobs;
         }
