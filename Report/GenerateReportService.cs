@@ -15,13 +15,14 @@ namespace JobSearcher.Report
         private readonly IDictionary<Site, IJobSearcherService> _searcherServices = new Dictionary<Site, IJobSearcherService>();
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
-        GlassDoorJobSearcher glassDoorJobSearcher, IUserFetchedLinkRepository userFetchedLinkRepository)
+        GlassDoorJobSearcher glassDoorJobSearcher, IUserFetchedLinkRepository userFetchedLinkRepository, IndeedJobSearcher indeedJobSearcher)
         {
             _logger = logger;
             _userReportService = userReportService;
             _jobOpeningSearcher = jobOpeningSearcher;
 
             _searcherServices.Add(Site.GlassDoor, glassDoorJobSearcher);
+            _searcherServices.Add(Site.Indeed, indeedJobSearcher);
             _userFetchedLinkRepository = userFetchedLinkRepository;
         }
 

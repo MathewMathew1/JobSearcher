@@ -29,8 +29,8 @@ namespace JobSearcher.Data
             modelBuilder.Entity<JobOpeningSearcherModel>(entity =>
             {
                 entity.HasIndex(e => e.UserId);
-
-                entity.HasOne(s => s.User)
+            
+                entity.HasOne<UserInDatabase>()
                       .WithMany(u => u.UserSearches)
                       .HasForeignKey(s => s.UserId)
                       .OnDelete(DeleteBehavior.Cascade);

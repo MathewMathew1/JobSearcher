@@ -5,7 +5,8 @@ namespace JobSearcher.JobOpening
 {
     public enum Site
     {
-        GlassDoor
+        GlassDoor,
+        Indeed
     }
 
     public class JobOpeningSearcherModel
@@ -19,7 +20,6 @@ namespace JobSearcher.JobOpening
         public required string JobSearched { get; set; }
         public required bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-         public UserInDatabase User { get; set; } = default!;
     }
 
     public class SearchInfo()

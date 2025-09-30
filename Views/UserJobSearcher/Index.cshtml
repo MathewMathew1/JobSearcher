@@ -4,6 +4,9 @@
 @{
     var glassDoorModel =
     new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
+    var indeedModel =
+    new SearchSectionViewModel { Site = Site.Indeed, Searches = Model.Where(s => s.Site == Site.Indeed).ToList() };
+
 }
 <div class="container my-4">
     <h3 class="mb-3 text-primary">Your Searches</h3>
@@ -12,7 +15,7 @@
         <div class="col-12 mb-4">
 
             @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
-
+            @await Html.PartialAsync("SearchSection/_SearchSection", indeedModel)
         </div>
 
         <div class="col-12">

@@ -46,6 +46,7 @@ builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<GlassDoorJobSearcher>();
+builder.Services.AddSingleton<IndeedJobSearcher>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddScoped<IGenerateReportService, GenerateReportService>();
 builder.Services.AddHostedService<ReportSetupBackgroundService>();

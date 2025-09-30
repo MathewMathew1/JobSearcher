@@ -14,13 +14,12 @@ namespace JobSearcher.Account
 
         public async Task<UserInDatabase?> GetUser(string email)
         {
-            return await _database.Users.FirstOrDefaultAsync(user => user.Email == email);
+            return await _database.Users.Include(u => u.UserSearches).FirstOrDefaultAsync(user => user.Email == email);
         }
 
         public async Task<UserInDatabase?> GetUserById(int id)
         {
-            return await _database.Users.Include(u => u.UserReports).
-FirstOrDefaultAsync(user => user.Id == id);
+            return await _database.Users.Include(u => u.UserReports).Include(u => u.UserSearches).FirstOrDefaultAsync(user => user.Id == id);
         }
 
         public async Task<UserInDatabase> SetUser(User user)
