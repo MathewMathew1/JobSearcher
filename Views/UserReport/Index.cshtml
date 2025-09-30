@@ -1,0 +1,88 @@
+@using JobSearcher.Job
+@using JobSearcher.JobOpening
+@using JobSearcher.UserReport
+@using System.Collections.Concurrent
+@model List<(UserReportModel Report, ConcurrentDictionary<Site, List<JobInfo>> Data)>
+
+@{
+    ViewData["Title"] = "User Reports";
+}
+
+<h2 class="mb-4">User Reports</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No reports available.</p>
+}
+else
+{
+
+    <div class="accordion" id="reportsAccordion">
+        @for (int r = 0; r < Model.Count; r++)
+        {
+            var report = Model[r].Report;
+            var data = Model[r].Data;
+                 var isNew = Model[r].Report.SeenByUser == false;
+
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="heading-@r"> <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse-@r" aria-expanded="false"
+                        aria-controls="collapse-@r">
+                        Report @report.CreatedAt.ToString("g")      @if (isNew)
+                                                {
+                                                    <span class="badge bg-danger ms-2">New</span>
+                                                } </button> </h2>
+                <div id="collapse-@r" class="accordion-collapse collapse" aria-labelledby="heading-@r"
+                    data-bs-parent="#reportsAccordion">
+                    <div class="accordion-body">
+                        @if (data == null || data.Count == 0)
+                        {
+                            <p>No site data.</p>
+                        }
+                        else
+                        {
+
+                            <div class="accordion" id="sitesAccordion-@r">
+                                @foreach (var siteData in data)
+                                {
+                                    var site = siteData.Key;
+                                    var jobs = siteData.Value;
+                               
+                                    <div class="accordion-item mb-2">
+                                        <h2 class="accordion-header" id="site-heading-@r-@site"> <button
+                                                class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                                                type="button" data-bs-toggle="collapse" data-bs-target="#site-collapse-@r-@site"
+                                                aria-expanded="false" aria-controls="site-collapse-@r-@site"> <span>@site</span>
+                                          
+                 </button> </h2>
+                                        <div id="site-collapse-@r-@site" class="accordion-collapse collapse"
+                                            aria-labelledby="site-heading-@r-@site" data-bs-parent="#sitesAccordion-@r">
+                                            <div class="accordion-body">
+                                                @if (jobs == null || jobs.Count == 0)
+                                                {
+                                                    <p>No jobs found for this site.</p>
+                                                }
+                                                else
+                                                {
+
+                                                    <ul class="list-group">
+                                                        @foreach (var job in jobs)
+                                                        {
+                                                            <li class="list-group-item"> <a href="@job.Link"
+                                                                    target="_blank">@job.Name</a><br /> <small
+                                                                    class="text-muted">@job.Description</small> </li>
+                                                        }
+                     </ul>
+                                                }
+                 </div>
+                                        </div>
+                                    </div>
+                                }
+             </div>
+                        }
+         </div>
+                </div>
+            </div>
+        }
+     </div>
+}

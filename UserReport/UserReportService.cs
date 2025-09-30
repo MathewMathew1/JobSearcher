@@ -4,7 +4,6 @@ using JobSearcher.Data;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace JobSearcher.UserReport
 {
@@ -21,9 +20,6 @@ namespace JobSearcher.UserReport
 
         public async Task<UserReportModel> AddUserReport(ConcurrentDictionary<Site, List<JobInfo>> resultsBySite, int userId)
         {
-            if (resultsBySite == null || resultsBySite.IsEmpty)
-                throw new ArgumentException("No job results to store.", nameof(resultsBySite));
-
             var allJobsJson = JsonSerializer.Serialize(resultsBySite);
 
             var report = new UserReportModel
@@ -65,6 +61,34 @@ namespace JobSearcher.UserReport
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation("Report {ReportId} marked as seen by user {UserId}", reportId, userId);
         }
+
+        public async Task<List<(UserReportModel Report, ConcurrentDictionary<Site, List<JobInfo>> Data)>>
+    GetUserReportsAsync(int userId, bool? seenByUser = null)
+        {
+            var query = _dbContext.UserReports.AsQueryable()
+                .Where(r => r.UserId == userId);
+
+            if (seenByUser.HasValue)
+            {
+                query = query.Where(r => r.SeenByUser == seenByUser.Value);
+            }
+
+            var reports = await query.ToListAsync();
+
+            var result = new List<(UserReportModel, ConcurrentDictionary<Site, List<JobInfo>>)>();
+
+            foreach (var report in reports)
+            {
+                var parsed = JsonSerializer.Deserialize<ConcurrentDictionary<Site, List<JobInfo>>>(report.DataJson);
+                if (parsed != null)
+                {
+                    result.Add((report, parsed));
+                }
+            }
+
+            return result;
+        }
+
     }
 
 }
