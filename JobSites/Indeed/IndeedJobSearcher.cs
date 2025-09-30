@@ -19,7 +19,7 @@ namespace JobSearcher.Job
             var page = await browser.NewPageAsync();
             var query = Uri.EscapeDataString(search.JobSearched);
             var location = Uri.EscapeDataString(search.Location);
-            string url = $"https://{search.CountryCode}/jobs?q={Uri.EscapeDataString(search.JobSearched)}&l={Uri.EscapeDataString(search.Location)}";
+            string url = $"https://{search.CountryCode}.indeed.com/jobs?q={search.JobSearched}&l={search.Location}";
 
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
