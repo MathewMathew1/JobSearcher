@@ -17,7 +17,7 @@
 else
 {
 
-    <div class="accordion" id="reportsAccordion">
+    <div class="accordion report-container" id="reportsAccordion">
         @for (int r = 0; r < Model.Count; r++)
         {
             var report = Model[r].Report;
@@ -26,7 +26,7 @@ else
             var collapseId = $"collapse-{report.Id}";
             var headingId = $"heading-{report.Id}";
 
-            <div class="accordion-item mb-3">
+            <div class="accordion-item mb-3 shadow p-3 mb-2 bg-body rounded">
                 <h2 class="accordion-header" id="@headingId">
                 <button class="accordion-button collapsed @(report.SeenByUser ? "" : "unseen-report")"
                         type="button"
@@ -54,7 +54,7 @@ else
                         else
                         {
 
-                            <div class="accordion" id="sitesAccordion-@r">
+                            <div class="accordion shadow p-3 mb-2 bg-body rounded" id="sitesAccordion-@r">
                                 @foreach (var siteData in data)
                                 {
                                     var site = siteData.Key;
