@@ -5,8 +5,25 @@
     var glassDoorModel =
     new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
 }
-<div class="container">
-    <h3>Your searches:</h3> 
-    @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
-    @await Component.InvokeAsync("ReportScheduler")
+<div class="container my-4">
+    <h3 class="mb-3 text-primary">Your Searches</h3>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+
+            @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
+
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Scheduled Reports
+                </div>
+                <div class="card-body">
+                    @await Component.InvokeAsync("ReportScheduler")
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
