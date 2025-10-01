@@ -7,6 +7,13 @@ namespace JobSearcher.Job
     {
         private readonly object _lock = new();
 
+        private readonly ILogger<PracujJobSearcher> _logger;
+
+        public PracujJobSearcher(ILogger<PracujJobSearcher> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<List<JobInfo>> GetJobOfferings(PracujPlSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
@@ -41,7 +48,9 @@ namespace JobSearcher.Job
 
                         var linkNode = node.SelectSingleNode(".//a[@data-test='link-offer-title']");
                         var link = linkNode?.GetAttributeValue("href", null);
+
                         if (link == null) continue;
+                        link = link.StartsWith("http") ? link : "https://www.pracuj.pl" + link;
 
                         lock (_lock)
                         {
@@ -60,12 +69,34 @@ namespace JobSearcher.Job
 
                         var img = node.SelectSingleNode(".//img[@data-test='image-responsive']")?.GetAttributeValue("src", null);
 
+                        string requirementsText = string.Empty;
+                        try
+                        {
+                            var jobPage = await browser.NewPageAsync();
+                            await jobPage.GotoAsync(link, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
+
+                            var requirementsElement = await jobPage.WaitForSelectorAsync(
+                                "section[data-test='section-requirements']",
+                                new PageWaitForSelectorOptions { Timeout = 15000 }
+                            );
+                            if (requirementsElement != null)
+                                requirementsText = await requirementsElement.InnerTextAsync();
+
+                            await jobPage.CloseAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Error retrieving requirements: {ex.Message}");
+                        }
+
+
                         jobs.Add(new JobInfo
                         {
                             Name = title ?? "Unknown",
                             Link = link.StartsWith("http") ? link : "https://www.pracuj.pl" + link,
                             Description = $"{employer} | {location} | {salary}",
-                            ImageLink = img
+                            ImageLink = img,
+                            ExtensiveDescription = requirementsText
                         });
 
                         totalCollected++;
