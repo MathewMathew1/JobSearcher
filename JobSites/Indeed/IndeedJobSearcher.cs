@@ -27,7 +27,17 @@ namespace JobSearcher.Job
 
             while (totalCollected < maxAmount)
             {
-                await page.WaitForSelectorAsync("div.job_seen_beacon", new PageWaitForSelectorOptions { Timeout = 12000 });
+                var result = await Task.WhenAny(
+                    page.WaitForSelectorAsync("div.job_seen_beacon", new PageWaitForSelectorOptions { Timeout = 12000 }),
+                    page.WaitForSelectorAsync("div.jobsearch-NoResult-messageContainer", new PageWaitForSelectorOptions { Timeout = 12000 })
+                );
+
+                var noResult = await page.QuerySelectorAsync("div.jobsearch-NoResult-messageContainer");
+                if (noResult != null)
+                {
+                    Console.WriteLine("No job results found for this search.");
+                    break;
+                }
 
                 var content = await page.ContentAsync();
                 var doc = new HtmlDocument();
