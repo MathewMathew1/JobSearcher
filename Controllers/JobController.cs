@@ -1,17 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using JobSearcher.Job;
+using JobSearcher.JobOpening;
 
 namespace JobSearcher.Controllers;
 
 public class JobController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly GlassDoorJobSearcher _glassDoorJobSearcher;
+    private readonly IDictionary<Site, IJobSearcherAdapter> _searcherAdapters = new Dictionary<Site, IJobSearcherAdapter>();
 
-    public JobController(ILogger<HomeController> logger, GlassDoorJobSearcher glassDoorJobSearcher)
+    public JobController(ILogger<HomeController> logger, GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IndeedJobSearcherAdapter indeedJobSearcherAdapter)
     {
         _logger = logger;
-        _glassDoorJobSearcher = glassDoorJobSearcher;
+        _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
+        _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
     }
 
     public IActionResult Index()
@@ -24,9 +26,8 @@ public class JobController : Controller
         return View();
     }
 
-
     [HttpGet]
-    public async Task<IActionResult> GetGlassDoorJobs(GlassDoorSearchModel search)
+    public async Task<IActionResult> SearchJobs(JobOpeningSearcherModel search)
     {
         try
         {
@@ -34,7 +35,13 @@ public class JobController : Controller
             {
                 return BadRequest(ModelState);
             }
-            var jobs = await _glassDoorJobSearcher.GetJobOfferings(search, new SearchedLink());
+            _searcherAdapters.TryGetValue(search.Site, out var adapter);
+            if (adapter == null)
+            {
+                return BadRequest(new { error = "No search service registered for site" });
+            }
+
+            var jobs = await adapter.GetJobOfferings(search, new SearchedLink());
 
             return PartialView("JobOpening/_JobOpeningList", jobs);
         }
@@ -44,5 +51,6 @@ public class JobController : Controller
             return StatusCode(500, new { error = "Unexpected error try again" });
         }
     }
+
 
 }

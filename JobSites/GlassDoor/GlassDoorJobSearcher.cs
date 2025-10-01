@@ -22,12 +22,7 @@ namespace JobSearcher.Job
 
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
-
-
-
-
             int totalCollected = 0;
-
 
             while (totalCollected < maxAmount)
             {

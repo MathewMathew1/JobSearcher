@@ -1,23 +1,34 @@
-@model JobSearcher.Job.JobSearchModel
+@using JobSearcher.JobOpening
+@model JobSearcher.JobOpening.JobOpeningSearcherModel
 @{
     ViewData["Title"] = "Jobs search";
 }
 
+
 <div class="text-center container flex-column">
     <div>
-        <h1>Job Searches: </h1>
+        <h1>Job Searcher: </h1>
     </div>
     <p>
         <a class="btn btn-spoiler w-100 d-flex justify-content-between align-items-center border"
             data-bs-toggle="collapse" href="#JobSearchModel" role="button" aria-expanded="false"
             aria-controls="JobSearchModel">
-            GlassDoor Job Search
+            Job Search
             <span class="arrow">▼</span>
         </a>
     </p>
     <div class="collapse" id="JobSearchModel">
         <div class="card card-body">
-            <form id="glassDoorForm" asp-controller="Job" asp-action="GetGlassDoorJobs" method="get">
+            <form id="jobSearchForm" asp-controller="Job" asp-action="SearchJobs" method="get">
+                <div class="mb-3">
+                    <label asp-for="Site" class="form-label"></label>
+                    <select asp-for="Site" class="form-select" id="siteSelect">
+                        @foreach (var site in Enum.GetValues(typeof(Site)))
+                        {
+                            <option value="@site">@site</option>
+                        }
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label asp-for="JobSearched" class="form-label"></label>
                     <input asp-for="JobSearched" class="form-control" placeholder="Job searched" />
@@ -28,32 +39,38 @@
                     <input asp-for="Location" class="form-control" placeholder="Place" />
                     <span asp-validation-for="Location" class="text-danger"></span>
                 </div>
-                <div id="glassDoorJobError" class="alert alert-danger mt-2" style="display:none;"></div>
+
+                <div class="mb-3 d-none" id="countryCodeDiv">
+                    <input type="text" class="form-control me-2" name="CountryCode" asp-for="CountryCode"
+                        placeholder="Country code" required />
+                </div>
+
+                <div id="jobSearchError" class="alert alert-danger mt-2" style="display:none;"></div>
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
             <h2>Jobs Openings:</h2>
-            <ul id="glassDoorJobs" class="jobOpening-list-small">
-            </ul>
+            <ul id="jobSearchResults" class="jobOpening-list-small"></ul>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
     <script>
         $(function () {
-            $(document).on('submit', '#glassDoorForm', function (e) {
+            $(document).on('submit', '#jobSearchForm', function (e) {
                 e.preventDefault();
                 var $form = $(this);
 
                 if (!$form.valid()) return false;
 
                 var url = $form.attr('action');
-                $('#glassDoorJobError').hide();
+                $('#jobSearchError').hide();
 
                 $.get(url, $form.serialize(), function (html) {
-                    $('#glassDoorJobs').html(html);
+                    $('#jobSearchResults').html(html);
                 }).fail(function (xhr) {
-                    var $errorDiv = $('#glassDoorJobError');
+                    var $errorDiv = $('#jobSearchError');
                     $errorDiv.empty().show();
                     if (xhr.status === 400 && xhr.responseJSON) {
                         var messages = [];
@@ -66,6 +83,20 @@
                     }
                 });
             });
+        });
+        $(function () {
+            function toggleCountryCode() {
+                var selected = $('#siteSelect').val();
+                console.log(selected)
+                if (selected === 'Indeed') {
+                    $('#countryCodeDiv').removeClass('d-none');
+                } else {
+                    $('#countryCodeDiv').addClass('d-none');
+                }
+            }
+
+            toggleCountryCode();
+            $('#siteSelect').on('change', toggleCountryCode);
         });
     </script>
 }
