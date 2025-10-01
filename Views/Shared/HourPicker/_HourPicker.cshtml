@@ -5,7 +5,7 @@
     <div class="p-3 text-center">
         <h4>Select the hours you want to receive reports</h4>
     </div>
-    <div id="hours-grid" class="d-grid gap-1 p-3 hour-grid" >
+    <div id="hours-grid" class="d-grid gap-1 p-3 hour-grid">
         @for (int h = 0; h < 24; h++)
         {
             var isSelected = Model?.Any(t => t.LocalTime.Hours == h) ?? false;
@@ -19,7 +19,9 @@
         <div id="too-many-alert" class="alert alert-danger d-none">
             You can select at most 2 hours.
         </div>
-        <button id="save-times-btn" class="btn btn-success mt-3">Save Report Times</button>
+        <div class="col-12 d-flex justify-content-end">
+            <button id="save-times-btn" class="btn btn-success mt-3">Save Report Times</button>
+        </div>
     </div>
 </div>
 

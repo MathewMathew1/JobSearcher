@@ -80,8 +80,71 @@ body {
   overflow-y: auto;
 }
 
-@media only screen and (max-width: 600px) {
+.hour-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 992px) {
+  .hour-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
   .hour-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.hour-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.6rem 0.4rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.hour-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.hour-btn.btn-primary {
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  border: none;
+  color: #fff;
+}
+
+.hour-btn.btn-outline-secondary {
+  background-color: #f9f9f9;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.hour-btn[data-hour="0"],
+.hour-btn[data-hour="1"],
+.hour-btn[data-hour="2"],
+.hour-btn[data-hour="3"],
+.hour-btn[data-hour="4"],
+.hour-btn[data-hour="5"] {
+  background-color: #f0f8ff; 
+}
+
+.hour-btn[data-hour="12"],
+.hour-btn[data-hour="13"],
+.hour-btn[data-hour="14"],
+.hour-btn[data-hour="15"],
+.hour-btn[data-hour="16"],
+.hour-btn[data-hour="17"] {
+  background-color: #fff8e1; 
+}
+
+.hour-btn[data-hour="18"],
+.hour-btn[data-hour="19"],
+.hour-btn[data-hour="20"],
+.hour-btn[data-hour="21"],
+.hour-btn[data-hour="22"],
+.hour-btn[data-hour="23"] {
+  background-color: #f3e5f5; 
 }
