@@ -22,14 +22,26 @@ namespace JobSearcher.Job
 
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
-            await page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 });
+
+
+
 
             int totalCollected = 0;
 
 
             while (totalCollected < maxAmount)
             {
-                await page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 });
+                var result = await Task.WhenAny(
+                page.WaitForSelectorAsync("li[data-test='jobListing']", new PageWaitForSelectorOptions { Timeout = 12000 }),
+                page.WaitForSelectorAsync("div.Error500_Module__hvQIB", new PageWaitForSelectorOptions { Timeout = 12000 }),
+                page.WaitForSelectorAsync("div[data-test='noResults']" , new PageWaitForSelectorOptions { Timeout = 12000 })
+            );
+
+                var noResult = await page.QuerySelectorAsync("div.Error500_Module__hvQIB");
+                if (noResult != null)
+                {
+                    return jobs;
+                }
                 var content = await page.ContentAsync();
                 var doc = new HtmlDocument();
                 doc.LoadHtml(content);
@@ -72,7 +84,8 @@ namespace JobSearcher.Job
                 }
 
                 var seeMoreButton = await page.QuerySelectorAsync("button[data-test='seeMoreJobs']");
-                if (seeMoreButton == null) {
+                if (seeMoreButton == null)
+                {
                     break;
                 }
 
