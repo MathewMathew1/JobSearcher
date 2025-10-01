@@ -5,55 +5,69 @@
 }
 
 
-<div class="text-center container flex-column">
-    <div>
-        <h1>Job Searcher: </h1>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 text-primary">Job Searcher</h1>
+        <p class="text-muted">Find your next opportunity faster</p>
     </div>
-    <p>
-        <a class="btn btn-spoiler w-100 d-flex justify-content-between align-items-center border"
-            data-bs-toggle="collapse" href="#JobSearchModel" role="button" aria-expanded="false"
-            aria-controls="JobSearchModel">
-            Job Search
-            <span class="arrow">▼</span>
-        </a>
-    </p>
-    <div class="collapse" id="JobSearchModel">
-        <div class="card card-body">
-            <form id="jobSearchForm" asp-controller="Job" asp-action="SearchJobs" method="get">
-                <div class="mb-3">
-                    <label asp-for="Site" class="form-label"></label>
-                    <select asp-for="Site" class="form-select" id="siteSelect">
-                        @foreach (var site in Enum.GetValues(typeof(Site)))
-                        {
-                            <option value="@site">@site</option>
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="JobSearched" class="form-label"></label>
-                    <input asp-for="JobSearched" class="form-control" placeholder="Job searched" />
-                    <span asp-validation-for="JobSearched" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Location" class="form-label"></label>
-                    <input asp-for="Location" class="form-control" placeholder="Place" />
-                    <span asp-validation-for="Location" class="text-danger"></span>
-                </div>
 
-                <div class="mb-3 d-none" id="countryCodeDiv">
-                    <input type="text" class="form-control me-2" name="CountryCode" asp-for="CountryCode"
-                        placeholder="Country code" required />
-                </div>
+    <div class="accordion shadow-sm rounded-3" id="jobSearchAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSearch">
+                <button class="accordion-button collapsed fw-semibold" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#JobSearchModel"
+                        aria-expanded="false" aria-controls="JobSearchModel">
+                    Job Search
+                </button>
+            </h2>
+            <div id="JobSearchModel" class="accordion-collapse collapse" aria-labelledby="headingSearch">
+                <div class="accordion-body bg-light">
+                    <form id="jobSearchForm" asp-controller="Job" asp-action="SearchJobs" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Site" class="form-label fw-semibold"></label>
+                            <select asp-for="Site" class="form-select" id="siteSelect">
+                                @foreach (var site in Enum.GetValues(typeof(Site)))
+                                {
+                                    <option value="@site">@site</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="JobSearched" class="form-label fw-semibold"></label>
+                            <input asp-for="JobSearched" class="form-control" placeholder="Software Engineer, Designer..." />
+                            <span asp-validation-for="JobSearched" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
+                            <input asp-for="Location" class="form-control" placeholder="City, Country" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
 
-                <div id="jobSearchError" class="alert alert-danger mt-2" style="display:none;"></div>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-            <h2>Jobs Openings:</h2>
-            <ul id="jobSearchResults" class="jobOpening-list-small"></ul>
+                        <div class="col-md-4 d-none" id="countryCodeDiv">
+                            <label asp-for="CountryCode" class="form-label fw-semibold">Country Code</label>
+                            <input type="text" class="form-control" name="CountryCode" asp-for="CountryCode"
+                                   placeholder="e.g. US, UK" required />
+                        </div>
+
+                        <div class="col-12">
+                            <div id="jobSearchError" class="alert alert-danger mt-2" style="display:none;"></div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
+    <div class="mt-5">
+        <h2 class="fw-bold mb-3">Job Openings</h2>
+        <ul id="jobSearchResults" class="list-group list-group-flush shadow-sm rounded-3 job-search-container"></ul>
+    </div>
+</div>
 
 @section Scripts {
     <script>
