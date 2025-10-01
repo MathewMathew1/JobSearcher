@@ -19,7 +19,7 @@ namespace JobSearcher.Job
             var page = await browser.NewPageAsync();
 
             var url = $"https://www.glassdoor.com/Job/{search.Location}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,23.htm";
-
+            Console.WriteLine($"Navigating to {url}");
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
             int totalCollected = 0;

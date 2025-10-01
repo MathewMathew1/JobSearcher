@@ -42,13 +42,13 @@ namespace JobSearcher.Controllers
                 var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 if (!result.Succeeded)
                 {
-                    return RedirectToAction("Login", "Login");
+                    return RedirectToAction("Index", "Login");
                 }
 
                 var principal = result.Principal;
                 if (principal == null)
                 {
-                    return RedirectToAction("Login", "Login");
+                    return RedirectToAction("Index", "Login");
                 }
 
                 var user = new User
@@ -92,7 +92,7 @@ namespace JobSearcher.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during Google authentication.");
-                return RedirectToAction("Login", "Login");
+                return RedirectToAction("Index", "Login");
             }
         }
 

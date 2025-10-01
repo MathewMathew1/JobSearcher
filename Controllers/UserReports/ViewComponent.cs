@@ -24,7 +24,7 @@ namespace UserJobSearcher.Controllers
             var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
             if (user == null)
             {
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Index", "Login");
             }
 
             var reports = await _reportRepository.GetUserReportsAsync(user.Id);

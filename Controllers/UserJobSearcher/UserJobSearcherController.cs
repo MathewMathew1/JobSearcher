@@ -32,7 +32,7 @@ namespace UserJobSearcher.Controllers
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
                 if (user == null)
                 {
-                    return RedirectToAction("Login", "Login");
+                    return RedirectToAction("Index", "Login");
                 }
                 _logger.LogInformation($"User {user.Email} has {user.UserSearches.Count} searches.");
                 foreach (var search in user.UserSearches)
@@ -57,12 +57,14 @@ namespace UserJobSearcher.Controllers
             {
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
                 if (user == null)
+                {
                     return Unauthorized();
+                }
 
                 if (user.UserSearches.Count >= 3)
-                {
-                    return BadRequest(new { error = "Maximum of 3 searches allowed for this site." });
-                }
+                    {
+                        return BadRequest(new { error = "Maximum of 3 searches allowed for this site." });
+                    }
 
                 var created = await _searcher.CreateJobOpeningSearch(searchInfo, user.Id);
 
