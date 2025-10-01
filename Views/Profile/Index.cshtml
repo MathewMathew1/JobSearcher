@@ -1,0 +1,70 @@
+@using Microsoft.AspNetCore.Http
+@model JobSearcher.Account.UserInDatabase
+
+@{
+    ViewData["Title"] = "Upload CV";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">Upload Your CV</h2>
+
+    <div id="uploadAlert" class="alert d-none" role="alert"></div>
+
+    <form id="cvUploadForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="cvFile" class="form-label">Select your CV (PDF or Word)</label>
+            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="uploadBtn">Upload CV</button>
+    </form>
+
+    <div class="mt-4">
+        <h4>Current CV</h4>
+        <ul id="currentCvList" class="list-group">
+
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#cvUploadForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var fileInput = $('#cvFile')[0];
+                if (fileInput.files.length === 0) return;
+
+                var formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+
+                var $btn = $('#uploadBtn');
+                $btn.prop('disabled', true).text('Uploading...');
+
+                $('#uploadAlert').removeClass('alert-success alert-danger').addClass('d-none').text('');
+
+                $.ajax({
+                     url: '@Url.Action("UploadCv", "Profile")',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                })
+                .done(function (data) {
+                    $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV uploaded successfully.');
+                    $('#currentCvList').html('<li class="list-group-item">' + fileInput.files[0].name + '</li>');
+                })
+                .fail(function (xhr) {
+                    var error = xhr.responseText || 'Error uploading CV.';
+                    console.log(xhr);
+                    $('#uploadAlert').removeClass('d-none').addClass('alert-danger').text(error);
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).text('Upload CV');
+                    $('#cvFile').val('');
+                });
+            });
+        });
+    </script>
+}

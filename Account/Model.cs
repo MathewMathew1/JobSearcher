@@ -1,3 +1,4 @@
+using JobSearcher.Cv;
 using JobSearcher.JobOpening;
 using JobSearcher.UserReport;
 
@@ -15,5 +16,6 @@ namespace JobSearcher.Account
         public int Id { get; set; }
         public ICollection<JobOpeningSearcherModel> UserSearches { get; set; } = new List<JobOpeningSearcherModel>();
         public ICollection<UserReportModel> UserReports { get; set; } = new List<UserReportModel>();
+        public ICollection<CvInDatabase> UserCvs { get; set; } = new List<Cv.CvInDatabase>();
     }
 }

@@ -5,6 +5,7 @@ using JobSearcher.JobOpening;
 using JobSearcher.Report;
 using JobSearcher.UserReport;
 using JobSearcher.UserSearchLink;
+using JobSearcher.Cv;
 
 namespace JobSearcher.Data
 {
@@ -21,6 +22,7 @@ namespace JobSearcher.Data
         public DbSet<UserReportModel> UserReports { get; set; }
 
         public DbSet<UserFetchedLink> UserFetchedLinks { get; set; }
+        public DbSet<CvInDatabase> UserCvs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +31,7 @@ namespace JobSearcher.Data
             modelBuilder.Entity<JobOpeningSearcherModel>(entity =>
             {
                 entity.HasIndex(e => e.UserId);
-            
+
                 entity.HasOne<UserInDatabase>()
                       .WithMany(u => u.UserSearches)
                       .HasForeignKey(s => s.UserId)
@@ -105,6 +107,16 @@ namespace JobSearcher.Data
                         .WithMany()
                         .HasForeignKey(e => e.UserId)
                         .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<CvInDatabase>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasIndex(e => e.UserId ).IsUnique();
+
+                entity.HasOne(e => e.User)
+                .WithMany(u => u.UserCvs).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

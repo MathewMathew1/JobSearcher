@@ -1,6 +1,9 @@
 using System.Security.Claims;
+using Amazon.S3;
+using Amazon.Extensions.NETCore.Setup;
 using JobSearcher.Account;
 using JobSearcher.Api.MiddleWare;
+using JobSearcher.Cv;
 using JobSearcher.Data;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
@@ -12,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using Amazon.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +46,20 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<IAccount, AccountMySql>();
 
+
+Console.WriteLine($"secret {builder.Configuration["AWS:SecretAccessKey"]}");
+
+var awsOptions = new AWSOptions
+{
+    Credentials = new BasicAWSCredentials(builder.Configuration["AWS:AccessKeyId"], builder.Configuration["AWS:SecretAccessKey"]),
+    Region = Amazon.RegionEndpoint.GetBySystemName(builder.Configuration["AWS:Region"])
+};
+
+builder.Services.AddDefaultAWSOptions(awsOptions);
+builder.Services.AddAWSService<IAmazonS3>();
+
+builder.Services.AddScoped<ICvStorageService, CvStorageService>();
+builder.Services.AddScoped<IUserCvStorageService, UserCvStorage>();
 builder.Services.AddScoped<IUserFetchedLinkRepository, UserFetchedLinkRepository>();
 builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
@@ -55,6 +73,7 @@ builder.Services.AddScoped<PracujPlSearchAdapter>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddScoped<IGenerateReportService, GenerateReportService>();
 builder.Services.AddHostedService<ReportSetupBackgroundService>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

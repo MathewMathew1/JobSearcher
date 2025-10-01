@@ -19,7 +19,12 @@ namespace JobSearcher.Account
 
         public async Task<UserInDatabase?> GetUserById(int id)
         {
-            return await _database.Users.Include(u => u.UserReports).Include(u => u.UserSearches).FirstOrDefaultAsync(user => user.Id == id);
+            return await _database.Users
+            .Include(u => u.UserReports)
+            .Include(u => u.UserSearches)
+            .Include(u => u.UserCvs)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(user => user.Id == id);
         }
 
         public async Task<UserInDatabase> SetUser(User user)
