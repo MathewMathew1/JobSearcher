@@ -9,11 +9,13 @@ public class JobController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IDictionary<Site, IJobSearcherAdapter> _searcherAdapters = new Dictionary<Site, IJobSearcherAdapter>();
 
-    public JobController(ILogger<HomeController> logger, GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IndeedJobSearcherAdapter indeedJobSearcherAdapter)
+    public JobController(ILogger<HomeController> logger, GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter,
+    IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter)
     {
         _logger = logger;
         _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
         _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
+        _searcherAdapters.Add(Site.PracujPl, pracujPlSearchAdapter);
     }
 
     public IActionResult Index()

@@ -37,6 +37,11 @@ namespace JobSearcher.Job
 
     }
 
+      public class PracujPlSearchModel : JobSearchModel
+    {
+
+    }
+
     public interface IJobSearcherAdapter
     {
         Site Site { get; }

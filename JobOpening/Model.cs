@@ -6,7 +6,8 @@ namespace JobSearcher.JobOpening
     public enum Site
     {
         GlassDoor,
-        Indeed
+        Indeed,
+        PracujPl
     }
 
     public class JobOpeningSearcherModel

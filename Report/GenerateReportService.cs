@@ -15,7 +15,8 @@ namespace JobSearcher.Report
         private readonly IDictionary<Site, IJobSearcherAdapter> _searcherAdapters = new Dictionary<Site, IJobSearcherAdapter>();
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
-        GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IUserFetchedLinkRepository userFetchedLinkRepository, IndeedJobSearcherAdapter indeedJobSearcherAdapter)
+        GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IUserFetchedLinkRepository userFetchedLinkRepository,
+        IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter)
         {
             _logger = logger;
             _userReportService = userReportService;
@@ -23,6 +24,7 @@ namespace JobSearcher.Report
 
             _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
             _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
+            _searcherAdapters.Add(Site.PracujPl, pracujPlSearchAdapter);
             _userFetchedLinkRepository = userFetchedLinkRepository;
         }
 
