@@ -44,7 +44,7 @@ namespace JobSearcher.Job
                 doc.LoadHtml(content);
 
                 var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class,'job_seen_beacon')]");
-                Console.WriteLine($"Found {nodes?.Count ?? 0} job nodes on the page.");
+
                 if (nodes != null)
                 {
                     foreach (var node in nodes)
@@ -52,11 +52,9 @@ namespace JobSearcher.Job
                         if (totalCollected >= maxAmount) break;
 
                         var titleNode = node.SelectSingleNode(".//h2[contains(@class,'jobTitle')]//span");
-                        Console.WriteLine($"Processing job node: {titleNode?.InnerText.Trim() ?? "No title found"}");
+
                         var linkNode = node.SelectSingleNode(".//a[contains(@class,'jcs-JobTitle')]");
                         var link = linkNode?.GetAttributeValue("href", null);
-
-                        Console.WriteLine($"extracted link {link}");
 
                         if (link == null) continue;
 

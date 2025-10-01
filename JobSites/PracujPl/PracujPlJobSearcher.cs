@@ -17,38 +17,29 @@ namespace JobSearcher.Job
             });
 
             var page = await browser.NewPageAsync();
-            
-            var url = $"https://www.pracuj.pl/praca/{Uri.EscapeDataString(search.JobSearched)};kw/{Uri.EscapeDataString(search.Location)}";
+            Console.WriteLine($"Searching for {search.JobSearched} in {search.Location} on Pracuj.pl");
+
+            var url = $"https://www.pracuj.pl/praca/{Uri.EscapeDataString(search.JobSearched)};kw/{Uri.EscapeDataString(search.Location)};wp?rd=30";
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
             int totalCollected = 0;
 
             while (totalCollected < maxAmount)
             {
-                var result = await Task.WhenAny(
-                    page.WaitForSelectorAsync("div.listing_ohw4t83", new PageWaitForSelectorOptions { Timeout = 12000 }),
-                    page.WaitForSelectorAsync("div.no-results", new PageWaitForSelectorOptions { Timeout = 12000 })
-                );
-
-                var noResult = await page.QuerySelectorAsync("div.no-results");
-                if (noResult != null)
-                {
-                    return jobs;
-                }
+                await page.WaitForSelectorAsync("div[data-test='section-offers']", new PageWaitForSelectorOptions { Timeout = 12000 });
 
                 var content = await page.ContentAsync();
                 var doc = new HtmlDocument();
                 doc.LoadHtml(content);
 
-                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class,'results__list__item')]");
+                var nodes = doc.DocumentNode.SelectNodes("//div[@data-test='section-offers']//div[contains(@data-test,'offer')]");
                 if (nodes != null)
                 {
                     foreach (var node in nodes)
                     {
-                        if (totalCollected >= maxAmount)
-                            break;
+                        if (totalCollected >= maxAmount) break;
 
-                        var linkNode = node.SelectSingleNode(".//a[contains(@class,'job-link')]");
+                        var linkNode = node.SelectSingleNode(".//a[@data-test='link-offer-title']");
                         var link = linkNode?.GetAttributeValue("href", null);
                         if (link == null) continue;
 
@@ -61,23 +52,27 @@ namespace JobSearcher.Job
                         }
 
                         var title = linkNode.InnerText.Trim();
-                        var employer = node.SelectSingleNode(".//span[contains(@class,'employer')]")?.InnerText.Trim();
-                        var location = node.SelectSingleNode(".//span[contains(@class,'location')]")?.InnerText.Trim();
-                        var salary = node.SelectSingleNode(".//span[contains(@class,'salary')]")?.InnerText.Trim();
+                        var employer = node.SelectSingleNode(".//h3[@data-test='text-company-name']")?.InnerText.Trim();
+                        var location = node.SelectSingleNode(".//h4[@data-test='text-region']")?.InnerText.Trim();
+
+                        var salaryNode = node.SelectSingleNode(".//ul[contains(@class,'tiles_bfrsaoj')]/li[contains(text(),'zł')]");
+                        var salary = salaryNode?.InnerText.Trim();
+
+                        var img = node.SelectSingleNode(".//img[@data-test='image-responsive']")?.GetAttributeValue("src", null);
 
                         jobs.Add(new JobInfo
                         {
                             Name = title ?? "Unknown",
                             Link = link.StartsWith("http") ? link : "https://www.pracuj.pl" + link,
                             Description = $"{employer} | {location} | {salary}",
-                            ImageLink = node.SelectSingleNode(".//img")?.GetAttributeValue("src", null)
+                            ImageLink = img
                         });
 
                         totalCollected++;
                     }
                 }
 
-                var nextButton = await page.QuerySelectorAsync("a.pagination__next");
+                var nextButton = await page.QuerySelectorAsync("button[data-test='pagination-next']");
                 if (nextButton == null) break;
 
                 await nextButton.ClickAsync();
@@ -87,4 +82,5 @@ namespace JobSearcher.Job
             return jobs;
         }
     }
+
 }
