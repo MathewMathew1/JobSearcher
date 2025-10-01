@@ -45,6 +45,10 @@ public class JobController : Controller
 
             var jobs = await adapter.GetJobOfferings(search, new SearchedLink());
 
+            if (jobs.Count == 0) {
+                return PartialView("JobOpening/_NoJobResults");
+            }
+
             return PartialView("JobOpening/_JobOpeningList", jobs);
         }
         catch (Exception e)
