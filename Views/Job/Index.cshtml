@@ -14,9 +14,8 @@
     <div class="accordion shadow-sm rounded-3" id="jobSearchAccordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingSearch">
-                <button class="accordion-button collapsed fw-semibold" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#JobSearchModel"
-                        aria-expanded="false" aria-controls="JobSearchModel">
+                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#JobSearchModel" aria-expanded="false" aria-controls="JobSearchModel">
                     Job Search
                 </button>
             </h2>
@@ -34,7 +33,8 @@
                         </div>
                         <div class="col-md-4">
                             <label asp-for="JobSearched" class="form-label fw-semibold"></label>
-                            <input asp-for="JobSearched" class="form-control" placeholder="Software Engineer, Designer..." />
+                            <input asp-for="JobSearched" class="form-control"
+                                placeholder="Software Engineer, Designer..." />
                             <span asp-validation-for="JobSearched" class="text-danger small"></span>
                         </div>
                         <div class="col-md-4">
@@ -46,7 +46,7 @@
                         <div class="col-md-4 d-none" id="countryCodeDiv">
                             <label asp-for="CountryCode" class="form-label fw-semibold">Country Code</label>
                             <input type="text" class="form-control" name="CountryCode" asp-for="CountryCode"
-                                   placeholder="e.g. US, UK" required />
+                                placeholder="e.g. US, UK" required />
                         </div>
 
                         <div class="col-12">
@@ -78,6 +78,11 @@
 
                 if (!$form.valid()) return false;
 
+                var $button = $form.find('button[type="submit"]');
+                var originalText = $button.html();
+
+                $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Loading...');
+
                 var url = $form.attr('action');
                 $('#jobSearchError').hide();
 
@@ -95,9 +100,12 @@
                     } else {
                         $errorDiv.text('Unexpected error fetching jobs.');
                     }
+                }).always(function () {
+                    $button.prop('disabled', false).html(originalText);
                 });
             });
         });
+
         $(function () {
             function toggleCountryCode() {
                 var selected = $('#siteSelect').val();
