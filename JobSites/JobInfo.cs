@@ -9,6 +9,7 @@ namespace JobSearcher.Job
         public required string Name { get; set; }
         public required string Description { get; set; }
         public string? ImageLink { get; set; }
+        public string ExtensiveDescription { get; set; } = string.Empty;
     }
 
     public class JobSearchModel
