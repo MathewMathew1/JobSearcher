@@ -7,7 +7,7 @@ namespace JobSearcher.Job
     {
         private readonly object _lock = new();
 
-        public async Task<List<JobInfo>> GetJobOfferings(IndeedSearchModel search, SearchedLink searchedLinks, int maxAmount = 20)
+        public async Task<List<JobInfo>> GetJobOfferings(IndeedSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
             using var playwright = await Playwright.CreateAsync();
@@ -17,9 +17,7 @@ namespace JobSearcher.Job
             });
 
             var page = await browser.NewPageAsync();
-            var query = Uri.EscapeDataString(search.JobSearched);
-            var location = Uri.EscapeDataString(search.Location);
-            string url = $"https://{search.CountryCode}.indeed.com/jobs?q={search.JobSearched}&l={search.Location}";
+            string url = $"https://{search.CountryCode}.indeed.com/jobs?q={Uri.EscapeDataString(search.JobSearched)}&l={Uri.EscapeDataString(search.Location)}";
 
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
@@ -27,76 +25,94 @@ namespace JobSearcher.Job
 
             while (totalCollected < maxAmount)
             {
-                var result = await Task.WhenAny(
-                    page.WaitForSelectorAsync("div.job_seen_beacon", new PageWaitForSelectorOptions { Timeout = 12000 }),
-                    page.WaitForSelectorAsync("div.jobsearch-NoResult-messageContainer", new PageWaitForSelectorOptions { Timeout = 12000 })
-                );
-
-                var noResult = await page.QuerySelectorAsync("div.jobsearch-NoResult-messageContainer");
-                if (noResult != null)
+                // Get all cards currently rendered
+                var jobCards = await page.QuerySelectorAllAsync("div.job_seen_beacon");
+                if (jobCards.Count == 0)
                 {
-                    Console.WriteLine("No job results found for this search.");
+                    Console.WriteLine("No job results found.");
                     break;
                 }
 
-                var content = await page.ContentAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(content);
-
-                var nodes = doc.DocumentNode.SelectNodes("//div[contains(@class,'job_seen_beacon')]");
-
-                if (nodes != null)
+                foreach (var card in jobCards)
                 {
-                    foreach (var node in nodes)
+                    if (totalCollected >= maxAmount)
+                        break;
+
+                    // Scroll and click card to open description
+                    await card.ScrollIntoViewIfNeededAsync();
+                    await card.ClickAsync();
+
+                    // Wait for description to appear / update
+                    var descElement = await page.WaitForSelectorAsync(
+                        "div#jobDescriptionText",
+                        new PageWaitForSelectorOptions { Timeout = 10000 }
+                    );
+
+                    string description = string.Empty;
+                    if (descElement != null)
+                        description = await descElement.InnerTextAsync();
+
+                    // Extract basic info from card
+                    var title = await card.QuerySelectorAsync("h2.jobTitle span") is IElementHandle t
+                        ? await t.InnerTextAsync()
+                        : "Unknown";
+
+                    var link = await card.QuerySelectorAsync("a.jcs-JobTitle") is IElementHandle a
+                        ? await a.GetAttributeAsync("href")
+                        : null;
+
+                    if (!string.IsNullOrEmpty(link) && !link.StartsWith("http"))
+                        link = "https://www.indeed.com" + link;
+
+                    if (string.IsNullOrEmpty(link))
+                        continue;
+
+                    lock (_lock)
                     {
-                        if (totalCollected >= maxAmount) break;
-
-                        var titleNode = node.SelectSingleNode(".//h2[contains(@class,'jobTitle')]//span");
-
-                        var linkNode = node.SelectSingleNode(".//a[contains(@class,'jcs-JobTitle')]");
-                        var link = linkNode?.GetAttributeValue("href", null);
-
-                        if (link == null) continue;
-
-                        if (!link.StartsWith("http"))
-                        {
-                            link = "https://www.indeed.com" + link;
-                        }
-
-                        lock (_lock)
-                        {
-                            if (searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
-                                continue;
-
-                            searchedLinks.NewLinks.Add(link);
-                        }
-
-                        var title = titleNode?.InnerText.Trim();
-                        var employer = node.SelectSingleNode(".//span[@data-testid='company-name']")?.InnerText.Trim();
-                        var locationText = node.SelectSingleNode(".//div[@data-testid='text-location']")?.InnerText.Trim();
-                        var salary = node.SelectSingleNode(".//span[contains(@class,'salary-snippet')]")?.InnerText.Trim();
-
-                        jobs.Add(new JobInfo
-                        {
-                            Name = title ?? "Unknown",
-                            Link = link,
-                            Description = $"{employer} | {locationText} | {salary}",
-                            ImageLink = null
-                        });
-
-                        totalCollected++;
+                        if (searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                            continue;
+                        searchedLinks.NewLinks.Add(link);
                     }
+
+                    var employer = await card.QuerySelectorAsync("span[data-testid='company-name']") is IElementHandle e
+                        ? await e.InnerTextAsync()
+                        : null;
+
+                    var locationText = await card.QuerySelectorAsync("div[data-testid='text-location']") is IElementHandle l
+                        ? await l.InnerTextAsync()
+                        : null;
+
+                    var salary = await card.QuerySelectorAsync("span.salary-snippet") is IElementHandle s
+                        ? await s.InnerTextAsync()
+                        : null;
+
+                    jobs.Add(new JobInfo
+                    {
+                        Name = title,
+                        Link = link,
+                        Description = $"{employer} | {locationText} | {salary}",
+                        ExtensiveDescription = description,
+                        ImageLink = null
+                    });
+
+                    totalCollected++;
                 }
 
+                // Go to next page if needed
+                if (totalCollected >= maxAmount)
+                    break;
+
                 var nextButton = await page.QuerySelectorAsync("a[aria-label='Next']");
-                if (nextButton == null || totalCollected >= maxAmount) break;
+                if (nextButton == null) break;
 
                 await nextButton.ClickAsync();
                 await page.WaitForTimeoutAsync(2000);
             }
+
             await browser.CloseAsync();
             Console.WriteLine($"Total jobs collected: {jobs.Count}");
             return jobs;
         }
+
     }
 }

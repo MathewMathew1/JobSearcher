@@ -44,9 +44,8 @@ namespace JobSearcher.Job
                     if (totalCollected >= maxAmount)
                         break;
 
-                    // Force load of this job into DOM
                     await jobNode.ScrollIntoViewIfNeededAsync();
-                    await page.WaitForTimeoutAsync(300); // let lazy-load complete
+                    await page.WaitForTimeoutAsync(300); 
 
                     var titleHandle = await jobNode.QuerySelectorAsync("a[data-test='job-title']");
                     var link = await titleHandle?.GetAttributeAsync("href");
