@@ -3,6 +3,7 @@ using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using JobSearcher.Account;
 using JobSearcher.Cv;
+using JobSearcher.AiAnalyzer;
 
 namespace JobSearcher.Controllers
 {
@@ -27,16 +28,18 @@ namespace JobSearcher.Controllers
         private readonly IAccount _account;
         private readonly ICvStorageService _cvStorage;
         private readonly ICvParserService _cvParser;
+        private readonly IJobAnalyzerService _jobAnalyzer;
 
         public JobController(ILogger<HomeController> logger, GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter,
         IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter,
-        IHttpContextAccessor http, IAccount account, ICvStorageService cvStorage, ICvParserService cvParser)
+        IHttpContextAccessor http, IAccount account, ICvStorageService cvStorage, ICvParserService cvParser, IJobAnalyzerService jobAnalyzerService)
         {
             _http = http;
             _account = account;
             _logger = logger;
             _cvStorage = cvStorage;
             _cvParser = cvParser;
+            _jobAnalyzer = jobAnalyzerService;
             _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
             _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
             _searcherAdapters.Add(Site.PracujPl, pracujPlSearchAdapter);
@@ -129,11 +132,15 @@ namespace JobSearcher.Controllers
                     return BadRequest(new { error = "No CV available to analyze." });
                 }
 
+                var analysis = await _jobAnalyzer.AnalyzeCvAsync(cvContent, jobDescription);
+
                 var job = new { Name = jobName };
                 _logger.LogInformation($"Analyzing job {jobName} with CV {cvFilename}, size {cvContent} bytes");
+                _logger.LogInformation($"Analysis: {analysis}");
                 return Json(new
                 {
                     Job = job,
+                    Analysis = analysis,
                     CvFilename = cvFilename,
                     Message = "Analysis not implemented yet"
                 });

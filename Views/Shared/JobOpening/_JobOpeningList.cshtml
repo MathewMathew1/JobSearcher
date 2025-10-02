@@ -11,24 +11,39 @@
 </ul>
 
 <div class="modal fade" id="analyzeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Analyze Job</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <p id="analyzeJobTitle"></p>
-                <div class="(@Model.User?.UserCv != null ? "" : " d-none")">
-                    <p>You can use your uploaded CV: <strong>@Model.User?.UserCv?.Filename</strong> or</p>
-                    <input type="file" class="form-control" accept=".pdf,.doc,.docx" />
 
+            <div class="modal-body">
+                <div class="mb-3">
+                    <p id="analyzeJobTitle" class="fw-bold mb-2"></p>
                 </div>
 
+                <div class="mb-3 @(Model.User?.UserCv != null ? "" : "d-none")">
+                    <p>You can use your uploaded CV: <strong>@Model.User?.UserCv?.Filename</strong> or upload a new one:
+                    </p>
+                    <input type="file" class="form-control" accept=".pdf,.doc,.docx" />
+                </div>
+
+                <div class="similarity-container mt-4">
+                    <p class="mb-1 fw-semibold">Fit Score:</p>
+                    <div class="progress" style="height: 28px; border-radius: 12px; overflow: hidden;">
+                        <div id="similarityBar" class="progress-bar text-center fw-bold" role="progressbar"
+                            style="width: 0%; background-color: red; transition: width 0.6s ease, background-color 0.6s ease;"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            0%
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Analyze</button>
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary px-4">Analyze</button>
             </div>
         </div>
     </div>
@@ -41,20 +56,20 @@
         $('#analyzeModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var jobName = button.data('jobname');
-            var cvFilename = button.data('cv');
+            var jobDesc = button.data('jobdesc');
 
             $('#analyzeJobTitle').text('Analyzing: ' + jobName);
-
+            $('#analyzeModal').data('jobdesc', jobDesc);
         });
 
         $('#analyzeModal button.btn-primary').on('click', function () {
             var jobName = $('#analyzeJobTitle').text().replace("Analyzing: ", "");
+            var jobDesc = $('#analyzeModal').data('jobdesc');
             var fileInput = $('#analyzeModal input[type="file"]')[0];
-            var jobDesc = $('#modalJobDescription').text();
 
             var formData = new FormData();
             formData.append('jobName', jobName);
-            formData.append('jobDescription', jobDesc); 
+            formData.append('jobDescription', jobDesc);
 
             if (fileInput.files.length > 0) {
                 formData.append('cvFile', fileInput.files[0]);
@@ -69,7 +84,30 @@
             })
                 .done(function (data) {
                     console.log('Analysis result:', data);
-                    alert(`Job: ${data.Job.Name}\nCV: ${data.CvFilename}\nSize: ${data.CvSize} bytes\nMessage: ${data.Message}`);
+
+                    var rawScore = parseFloat(data.analysis);
+                    if (isNaN(rawScore)) rawScore = 0;
+
+                    var minRaw = 0.3;
+                    var maxRaw = 0.8;
+                    var minVisual = 70;
+                    var maxVisual = 100;
+
+                    var percent = Math.round(
+                        ((rawScore - minRaw) / (maxRaw - minRaw)) * (maxVisual - minVisual) + minVisual
+                    );
+
+                    percent = Math.min(Math.max(percent, 0), 100);
+
+                    var r = Math.round(255 * (1 - percent / 100) * 0.5);
+                    var g = Math.round(128 + 127 * (percent / 100));
+                    var b = 0;
+                    var color = `rgb(${r},${g},${b})`;
+
+                    var bar = $('#similarityBar');
+                    bar.css('width', percent + '%');
+                    bar.css('background-color', color);
+                    bar.text(percent + '%');
                 })
                 .fail(function (xhr) {
                     console.log(xhr)

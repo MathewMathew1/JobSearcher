@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Amazon.Runtime;
+using OpenAI.Chat;
+using JobSearcher.AiAnalyzer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +57,10 @@ var awsOptions = new AWSOptions
     Region = Amazon.RegionEndpoint.GetBySystemName(builder.Configuration["AWS:Region"])
 };
 
+
+string openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
+
+builder.Services.AddSingleton<IJobAnalyzerService, HuggingFaceJobAnalyzerService>();
 builder.Services.AddScoped<ICvParserService, CvParserService>();
 
 builder.Services.AddDefaultAWSOptions(awsOptions);
