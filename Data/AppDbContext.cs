@@ -116,7 +116,7 @@ namespace JobSearcher.Data
                 entity.HasIndex(e => e.UserId ).IsUnique();
 
                 entity.HasOne(e => e.User)
-                .WithMany(u => u.UserCvs).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+                .WithOne(u => u.UserCv).HasForeignKey<CvInDatabase>(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

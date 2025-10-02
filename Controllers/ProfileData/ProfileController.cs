@@ -32,6 +32,7 @@ namespace JobSearcher.Controllers
             {
                 return RedirectToAction("Index", "Login");
             }
+            _logger.LogInformation($"User {(user.UserCv != null? "has" : "does not have")} a CV uploaded.");
             return View(user);
         }
 
@@ -51,14 +52,14 @@ namespace JobSearcher.Controllers
                     return BadRequest("Only PDF and Word documents are allowed.");
                 }
 
-                if (user.UserCvs.Count > 0)
+                if (user.UserCv != null)
                 {
                     return BadRequest("You can only upload one CV at a time.");
                 }
 
                 using var stream = file.OpenReadStream();
                 var key = await _cvStorage.UploadCvAsync(stream, file.FileName, file.ContentType);
-                var savedInDatabase = await _userCvStorage.UploadCvAsync(user.Id, key);
+                var savedInDatabase = await _userCvStorage.UploadCvAsync(user.Id, key, file.FileName);
 
                 if (!savedInDatabase)
                 {
@@ -91,14 +92,14 @@ namespace JobSearcher.Controllers
                     return BadRequest("Only PDF and Word documents are allowed.");
                 }
 
-                if (user.UserCvs.Count == 0)
+                if (user.UserCv == null)
                 {
                     return BadRequest("No existing CV to update. Please upload a CV first.");
                 }
 
                 using var stream = file.OpenReadStream();
                 var key = await _cvStorage.UploadCvAsync(stream, file.FileName, file.ContentType);
-                await _userCvStorage.UpdateFileNameKeyAsync(user.Id, key);
+                await _userCvStorage.UpdateFileNameKeyAsync(user.Id, key, file.FileName);
 
                 return Ok(new { Key = key });
             }
@@ -110,6 +111,34 @@ namespace JobSearcher.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetCv()
+        {
+            try
+            {
+                var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
+                if (user.UserCv == null)
+                {
+                    return NotFound("No CV found for the user.");
+                }
+
+                var cvKey = user.UserCv.AwsS3Key;
+                var cvStream = await _cvStorage.DownloadCvAsync(cvKey);
+                if (cvStream == null)
+                {
+                    return NotFound("CV file not found in storage.");
+                }
+
+                return File(cvStream, "application/octet-stream", user.UserCv.Filename);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error retrieving user cv: {e}");
+                return StatusCode(500, new { error = "Unexpected error retrieving cv." });
+            }
+        }
+
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteCv()
         {
@@ -117,8 +146,8 @@ namespace JobSearcher.Controllers
             {
                 var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
 
-                await _cvStorage.DeleteCvAsync(user.UserCvs.ToList()[0].AwsS3Key);
-                await _userCvStorage.DeleteCvAsync(user.UserCvs.ToList()[0].AwsS3Key, user.Id);
+                await _cvStorage.DeleteCvAsync(user.UserCv.AwsS3Key);
+                await _userCvStorage.DeleteCvAsync(user.UserCv.AwsS3Key, user.Id);
                 return NoContent();
             }
             catch (Exception e)

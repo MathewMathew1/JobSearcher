@@ -14,7 +14,7 @@ namespace JobSearcher.Cv
             _dbContext = dbContext;
         }
 
-        public async Task<bool> UploadCvAsync(int userId, string fileNameKey)
+        public async Task<bool> UploadCvAsync(int userId, string fileNameKey, string fileName)
         {
             try
             {
@@ -22,10 +22,12 @@ namespace JobSearcher.Cv
                 {
                     UserId = userId,
                     AwsS3Key = fileNameKey,
-                    UploadedAt = DateTime.UtcNow
+                    UploadedAt = DateTime.UtcNow,
+                    Filename = fileName
                 };
 
                 await _dbContext.UserCvs.AddAsync(newCv);
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateException ex)
@@ -46,13 +48,14 @@ namespace JobSearcher.Cv
             }
         }
         
-        public async Task UpdateFileNameKeyAsync(int userId, string newFileNameKey)
+        public async Task UpdateFileNameKeyAsync(int userId, string newFileNameKey, string fileName)
         {
             var cv = await _dbContext.UserCvs.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cv != null)
             {
                 cv.AwsS3Key = newFileNameKey;
                 cv.LastUpdated = DateTime.UtcNow;
+                cv.Filename = fileName;
                 await _dbContext.SaveChangesAsync();
             }
         }

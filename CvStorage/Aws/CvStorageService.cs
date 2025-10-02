@@ -41,5 +41,17 @@ namespace JobSearcher.Cv
 
             await _s3Client.DeleteObjectAsync(request);
         }
+
+        public async Task<Stream> DownloadCvAsync(string key)
+        {
+            var request = new GetObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = key
+            };
+
+            var response = await _s3Client.GetObjectAsync(request);
+            return response.ResponseStream;
+        }
     }
 }

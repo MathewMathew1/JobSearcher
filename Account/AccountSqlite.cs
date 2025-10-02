@@ -22,7 +22,7 @@ namespace JobSearcher.Account
             return await _database.Users
             .Include(u => u.UserReports)
             .Include(u => u.UserSearches)
-            .Include(u => u.UserCvs)
+            .Include(u => u.UserCv)
             .AsSplitQuery()
             .FirstOrDefaultAsync(user => user.Id == id);
         }

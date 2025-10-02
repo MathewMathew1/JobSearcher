@@ -3,6 +3,7 @@ using System;
 using JobSearcher.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JobSearcher.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251002065649_Added filename to file")]
+    partial class Addedfilenametofile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -239,8 +242,8 @@ namespace JobSearcher.Migrations
             modelBuilder.Entity("JobSearcher.Cv.CvInDatabase", b =>
                 {
                     b.HasOne("JobSearcher.Account.UserInDatabase", "User")
-                        .WithOne("UserCv")
-                        .HasForeignKey("JobSearcher.Cv.CvInDatabase", "UserId")
+                        .WithMany("UserCvs")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -300,7 +303,7 @@ namespace JobSearcher.Migrations
 
             modelBuilder.Entity("JobSearcher.Account.UserInDatabase", b =>
                 {
-                    b.Navigation("UserCv");
+                    b.Navigation("UserCvs");
 
                     b.Navigation("UserReports");
 

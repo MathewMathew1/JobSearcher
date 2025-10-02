@@ -6,26 +6,60 @@
 }
 
 <div class="container py-5">
-    <h2 class="mb-4">Upload Your CV</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
 
-    <div id="uploadAlert" class="alert d-none" role="alert"></div>
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4">
 
-    <form id="cvUploadForm" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="cvFile" class="form-label">Select your CV (PDF or Word)</label>
-            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx" required />
+                    <h2 class="mb-4">Upload Your CV</h2>
+
+                    <div id="uploadAlert" class="alert d-none" role="alert"></div>
+
+                    <form id="cvUploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="cvFile" class="form-label fw-semibold">Select your CV (PDF or Word)</label>
+                            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+                            <i class="bi bi-upload me-2"></i>Upload CV
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div>
+                        <h4 class="mb-3">Current CV</h4>
+                        <div id="currentCvList" class="list-group">
+                            @if (Model.UserCv != null)
+                            {
+                                <div id="existing-cv" class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@Model.UserCv.Filename</span>
+                                    <div>
+                                        <a href="@Url.Action("GetCv","Profile")" class="btn btn-sm btn-outline-secondary me-2">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" id="deleteCvBtn">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="list-group-item text-muted">No CV uploaded yet.</div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-
-        <button type="submit" class="btn btn-primary" id="uploadBtn">Upload CV</button>
-    </form>
-
-    <div class="mt-4">
-        <h4>Current CV</h4>
-        <ul id="currentCvList" class="list-group">
-
-        </ul>
     </div>
 </div>
+
 
 @section Scripts {
     <script>
@@ -44,26 +78,37 @@
 
                 $('#uploadAlert').removeClass('alert-success alert-danger').addClass('d-none').text('');
 
+                var $cv = $('#existing-cv');
+                console.log($cv.length)
+                var method = $cv.length>0 ? 'PATCH': 'POST'
+                var url = $cv.length>0 ? '@Url.Action("UpdateCv", "Profile")' : '@Url.Action("UploadCv", "Profile")'
+
                 $.ajax({
-                     url: '@Url.Action("UploadCv", "Profile")',
-                    method: 'POST',
+                    url: url,
+                    method: method,
                     data: formData,
                     processData: false,
                     contentType: false
                 })
-                .done(function (data) {
-                    $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV uploaded successfully.');
-                    $('#currentCvList').html('<li class="list-group-item">' + fileInput.files[0].name + '</li>');
-                })
-                .fail(function (xhr) {
-                    var error = xhr.responseText || 'Error uploading CV.';
-                    console.log(xhr);
-                    $('#uploadAlert').removeClass('d-none').addClass('alert-danger').text(error);
-                })
-                .always(function () {
-                    $btn.prop('disabled', false).text('Upload CV');
-                    $('#cvFile').val('');
-                });
+                    .done(function (data) {
+                        $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV uploaded successfully.');
+                        if($cv.length>0){
+                            $cv.html(fileInput.files[0].name);
+                            addToast({ message: 'Uploaded cv successfully', type: 'success' })
+                        }else{
+                            $('#currentCvList').html('<div class="list-group-item">' + fileInput.files[0].name + '</div>');
+                        }
+                        $('#currentCvList').html('<div class="list-group-item">' + fileInput.files[0].name + '</div>');
+                    })
+                    .fail(function (xhr) {
+                        var error = xhr.responseText || 'Error uploading CV.';
+                        console.log(xhr);
+                        $('#uploadAlert').removeClass('d-none').addClass('alert-danger').text(error);
+                    })
+                    .always(function () {
+                        $btn.prop('disabled', false).text('Upload CV');
+                        $('#cvFile').val('');
+                    });
             });
         });
     </script>

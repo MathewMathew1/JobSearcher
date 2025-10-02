@@ -7,6 +7,7 @@ namespace JobSearcher.Cv
     {
         public int Id { get; set; }
         public required int UserId { get; set; }
+        public required string Filename { get; set; }
         public required string AwsS3Key { get; set; }
         public required DateTime UploadedAt { get; set; }
         public DateTime? LastUpdated { get; set; }
