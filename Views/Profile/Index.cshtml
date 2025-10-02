@@ -19,7 +19,8 @@
                     <form id="cvUploadForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="cvFile" class="form-label fw-semibold">Select your CV (PDF or Word)</label>
-                            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx" required />
+                            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx"
+                                required />
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
@@ -32,24 +33,26 @@
                     <div>
                         <h4 class="mb-3">Current CV</h4>
                         <div id="currentCvList" class="list-group">
-                            @if (Model.UserCv != null)
-                            {
-                                <div id="existing-cv" class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>@Model.UserCv.Filename</span>
-                                    <div>
-                                        <a href="@Url.Action("GetCv","Profile")" class="btn btn-sm btn-outline-secondary me-2">
-                                            <i class="bi bi-download"></i> Download
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" id="deleteCvBtn">
-                                            <i class="bi bi-trash"></i> Delete
-                                        </button>
-                                    </div>
+
+                            <div id="existing-cv"
+                                class="list-group-item d-flex justify-content-between align-items-center @(Model?.UserCv != null ? "" : "d-none")">
+                                <span>@Model?.UserCv?.Filename</span>
+                                <div>
+                                    <a href="@Url.Action("GetCv", "Profile")"
+                                        class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="deleteCvBtn">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="list-group-item text-muted">No CV uploaded yet.</div>
-                            }
+                            </div>
+
+
+
+                            <div id="no-cv" class="list-group-item text-muted @(Model.UserCv == null ? "" : "d-none")">No CV
+                                uploaded yet.</div>
+
                         </div>
                     </div>
 
@@ -64,6 +67,7 @@
 @section Scripts {
     <script>
         $(function () {
+            // Upload or update CV
             $('#cvUploadForm').on('submit', function (e) {
                 e.preventDefault();
 
@@ -79,9 +83,13 @@
                 $('#uploadAlert').removeClass('alert-success alert-danger').addClass('d-none').text('');
 
                 var $cv = $('#existing-cv');
-                console.log($cv.length)
-                var method = $cv.length>0 ? 'PATCH': 'POST'
-                var url = $cv.length>0 ? '@Url.Action("UpdateCv", "Profile")' : '@Url.Action("UploadCv", "Profile")'
+                if ($cv.hasClass('d-none')) {
+                    method = 'POST';
+                    url = '@Url.Action("UploadCv", "Profile")';
+                } else {
+                    method = 'PATCH';
+                    url = '@Url.Action("UpdateCv", "Profile")';
+                }
 
                 $.ajax({
                     url: url,
@@ -92,17 +100,14 @@
                 })
                     .done(function (data) {
                         $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV uploaded successfully.');
-                        if($cv.length>0){
-                            $cv.html(fileInput.files[0].name);
-                            addToast({ message: 'Uploaded cv successfully', type: 'success' })
-                        }else{
-                            $('#currentCvList').html('<div class="list-group-item">' + fileInput.files[0].name + '</div>');
-                        }
-                        $('#currentCvList').html('<div class="list-group-item">' + fileInput.files[0].name + '</div>');
+
+                       $cv.removeClass('d-none').find('span').text(data.filename);
+                        var $noCv = $('#no-cv');
+                        $noCv.addClass('d-none');
+                        $('#currentCvList').html(html);
                     })
                     .fail(function (xhr) {
                         var error = xhr.responseText || 'Error uploading CV.';
-                        console.log(xhr);
                         $('#uploadAlert').removeClass('d-none').addClass('alert-danger').text(error);
                     })
                     .always(function () {
@@ -110,6 +115,28 @@
                         $('#cvFile').val('');
                     });
             });
+
+            // Delete CV
+            $(document).on('click', '#deleteCvBtn', function () {
+                if (!confirm('Are you sure you want to delete your CV?')) return;
+
+                $.ajax({
+                    url: '@Url.Action("DeleteCv", "Profile")',
+                    method: 'DELETE'
+                })
+                    .done(function () {
+                        $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV deleted successfully.');
+
+                        // Replace with "No CV" message
+                        $('#currentCvList').html('<div class="list-group-item text-muted">No CV uploaded yet.</div>');
+                    })
+                    .fail(function (xhr) {
+                        var error = xhr.responseText || 'Error deleting CV.';
+                        $('#uploadAlert').removeClass('d-none').addClass('alert-danger').text(error);
+                    });
+            });
         });
     </script>
+}
+
 }
