@@ -1,7 +1,84 @@
+@model JobSearchResultViewModel
+@using JobSearcher.Controllers
 @using JobSearcher.Job
-@model List<JobInfo>
 
-@foreach(var job in Model)
-{
-    @await Html.PartialAsync("JobOpening/_JobOpening", job)
-}
+<ul class="list-unstyled">
+    @foreach (var job in Model.Jobs)
+    {
+        var vm = new JobWithUserViewModel { Job = job, User = Model.User };
+        @await Html.PartialAsync("JobOpening/_JobOpening", vm)
+    }
+</ul>
+
+<div class="modal fade" id="analyzeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Analyze Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="analyzeJobTitle"></p>
+                <div class="(@Model.User?.UserCv != null ? "" : " d-none")">
+                    <p>You can use your uploaded CV: <strong>@Model.User?.UserCv?.Filename</strong> or</p>
+                    <input type="file" class="form-control" accept=".pdf,.doc,.docx" />
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Analyze</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#analyzeModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var jobName = button.data('jobname');
+            var cvFilename = button.data('cv');
+
+            $('#analyzeJobTitle').text('Analyzing: ' + jobName);
+
+        });
+
+        $('#analyzeModal button.btn-primary').on('click', function () {
+            var jobName = $('#analyzeJobTitle').text().replace("Analyzing: ", "");
+            var fileInput = $('#analyzeModal input[type="file"]')[0];
+            var jobDesc = $('#modalJobDescription').text();
+
+            var formData = new FormData();
+            formData.append('jobName', jobName);
+            formData.append('jobDescription', jobDesc); 
+
+            if (fileInput.files.length > 0) {
+                formData.append('cvFile', fileInput.files[0]);
+            }
+
+            $.ajax({
+                url: '/Job/AnalyzeJob',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false
+            })
+                .done(function (data) {
+                    console.log('Analysis result:', data);
+                    alert(`Job: ${data.Job.Name}\nCV: ${data.CvFilename}\nSize: ${data.CvSize} bytes\nMessage: ${data.Message}`);
+                })
+                .fail(function (xhr) {
+                    console.log(xhr)
+                    var errorText = xhr.responseJSON?.error || xhr.responseText || 'Unknown error';
+                    alert('Error: ' + errorText);
+                });
+        });
+    });
+
+
+
+</script>

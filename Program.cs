@@ -55,6 +55,8 @@ var awsOptions = new AWSOptions
     Region = Amazon.RegionEndpoint.GetBySystemName(builder.Configuration["AWS:Region"])
 };
 
+builder.Services.AddScoped<ICvParserService, CvParserService>();
+
 builder.Services.AddDefaultAWSOptions(awsOptions);
 builder.Services.AddAWSService<IAmazonS3>();
 

@@ -7,7 +7,7 @@ namespace JobSearcher.Job
     {
         private readonly object _lock = new();
 
-        public async Task<List<JobInfo>> GetJobOfferings(IndeedSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
+        public async Task<List<JobInfo>> GetJobOfferings(IndeedSearchModel search, SearchedLink searchedLinks, int maxAmount = 1)
         {
             var jobs = new List<JobInfo>();
             using var playwright = await Playwright.CreateAsync();

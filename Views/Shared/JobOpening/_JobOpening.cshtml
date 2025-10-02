@@ -1,25 +1,29 @@
-@using JobSearcher.Job
-@model JobInfo
+@using JobSearcher.Controllers
+@model JobWithUserViewModel
 
 <li class="job-item d-flex flex-column flex-md-row align-items-start mb-3 p-3 border rounded shadow-sm">
     <div class="job-text me-md-3 mb-2 mb-md-0 flex-grow-1">
-        <a href="@Model.Link" target="_blank" rel="noopener noreferrer">
-            <strong class="job-name">@Model.Name</strong>
+        <a href="@Model.Job.Link" target="_blank" rel="noopener noreferrer">
+            <strong class="job-name">@Model.Job.Name</strong>
         </a>
-        <p class="job-description mb-1">@Model.Description</p>
+        <p class="job-description mb-1">@Model.Job.Description</p>
 
-        @if (!string.IsNullOrEmpty(Model.ExtensiveDescription))
+        @if (!string.IsNullOrEmpty(Model.Job.ExtensiveDescription))
         {
-            <div class="accordion mt-2" id="accordion-@Model.Name.GetHashCode()">
+            <div class="accordion mt-2" id="accordion-@Model.Job.Link.GetHashCode()">
                 <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading-@Model.Name.GetHashCode()">
-                        <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Model.Name.GetHashCode()" aria-expanded="false" aria-controls="collapse-@Model.Name.GetHashCode()">
+                    <h2 class="accordion-header" id="heading-@Model.Job.Link.GetHashCode()">
+                        <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-@Model.Job.Link.GetHashCode()" aria-expanded="false"
+                            aria-controls="collapse-@Model.Job.Link.GetHashCode()">
                             Show Full Description
                         </button>
                     </h2>
-                    <div id="collapse-@Model.Name.GetHashCode()" class="accordion-collapse collapse" aria-labelledby="heading-@Model.Name.GetHashCode()" data-bs-parent="#accordion-@Model.Name.GetHashCode()">
+                    <div id="collapse-@Model.Job.Link.GetHashCode()" class="accordion-collapse collapse"
+                        aria-labelledby="heading-@Model.Job.Link.GetHashCode()"
+                        data-bs-parent="#accordion-@Model.Job.Link.GetHashCode()">
                         <div class="accordion-body p-2" style="white-space: pre-wrap; font-size: 0.9rem;">
-                            @Model.ExtensiveDescription
+                            @Model.Job.ExtensiveDescription
                         </div>
                     </div>
                 </div>
@@ -27,4 +31,15 @@
         }
     </div>
 
+    @if (Model.User != null)
+    {
+        <div class="ms-md-3 mt-2 mt-md-0">
+            <button class="btn btn-outline-primary btn-sm analyze-btn" data-jobname="@Model.Job.Name"
+                data-jobdesc="@Html.Raw(Model.Job.ExtensiveDescription?.Replace("\"", "&quot;"))"
+                data-cv="@Model.User.UserCv?.Filename" data-bs-toggle="modal" data-bs-target="#analyzeModal">
+                Analyze
+            </button>
+
+        </div>
+    }
 </li>
