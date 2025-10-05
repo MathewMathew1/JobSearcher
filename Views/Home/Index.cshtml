@@ -1,9 +1,89 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
+<div class="container pb-5">
+    <div class="py-5 text-center text-white"
+        style="background: linear-gradient(90deg, #4e73df 0%, #1cc88a 100%); border-radius: 8px;">
+        <h1 class="display-4 fw-bold">Welcome to JobSearcher</h1>
+        <p class="lead">Your personal job search assistant across multiple platforms.</p>
+    </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="row mb-4 pt-2">
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h3 class="card-title pb-2 text-center">How It Works</h3>
+
+                    <div class="row text-center mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Automatic Reports</h5>
+                                    <p class="card-text">Receive job reports directly in your email at the scheduled
+                                        time in your timezone.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">No Duplicates</h5>
+                                    <p class="card-text">We ensure jobs are never repeated and stored securely in your
+                                        account.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Multi-Platform</h5>
+                                    <p class="card-text">Search simultaneously on Indeed, Pracuj.pl, and Glassdoor with
+                                        one account.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">CV Analyzer</h5>
+                                    <p class="card-text">Check how well your CV matches job descriptions and optimize
+                                        your applications for better results.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h3 class="card-title text-center">Supported Providers</h3>
+                    <p class="card-text ps-4">
+                        Currently, JobSearcher fetches jobs from the following trusted providers:
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Indeed:</strong> Large-scale job listings across multiple
+                            industries and locations.</li>
+                        <li class="list-group-item"><strong>Pracuj.pl:</strong> Popular platform for job offers in
+                            Poland, covering IT, marketing, and more.</li>
+                        <li class="list-group-item"><strong>Glassdoor:</strong> Offers company insights and job postings
+                            for informed decisions.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center mt-5">
+        <div class="col-md-12">
+            <p class="h5">Get started by <a asp-controller="Login" asp-action="Index">logging in</a> and setting up your
+                first search!</p>
+        </div>
+    </div>
 </div>
