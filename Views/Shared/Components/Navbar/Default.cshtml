@@ -1,47 +1,49 @@
 @model JobSearcher.Account.UserInDatabase?
 
-<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom shadow-sm mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" asp-controller="Home" asp-action="Index">JobSearcher</a>
+    <a class="navbar-brand fw-bold text-gradient"
+      style="background: linear-gradient(45deg, #007bff, #6610f2); -webkit-background-clip: text; color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.15);"
+      asp-controller="Home" asp-action="Index">JobSearcher</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-      <ul class="navbar-nav flex-grow-1">
-        <li class="nav-item align-items-center d-flex">
-          <a class="nav-link  @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
-            asp-controller="Home" asp-action="Index">Home</a>
-        </li>
-        <li class="nav-item align-items-center d-flex">
-          <a class="nav-link  @(ViewContext.RouteData.Values["controller"]?.ToString() == "Job" ? "active" : "")"
-            asp-controller="Job" asp-action="Index">Job Searches</a>
+      <ul class="navbar-nav flex-grow-1 d-flex align-items-center">
+        <li class="nav-item">
+          <a class="nav-link fw-semibold px-3 @((ViewContext.RouteData.Values["controller"]?.ToString() == "Home") 
+                                      ? "active shadow-sm rounded-pill bg-primary text-white" : "")" asp-controller="Home"
+            asp-action="Index">Home</a>
         </li>
         <li class="nav-item">
-          @if (Model != null)
-          {
+          <a class="nav-link fw-semibold px-3 @((ViewContext.RouteData.Values["controller"]?.ToString() == "Job") 
+                                      ? "active shadow-sm rounded-pill bg-primary text-white" : "")" asp-controller="Job"
+            asp-action="Index">Job
+            Searches</a>
+        </li>
+        @if (Model != null)
+        {
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="@Model.ProfilePicture" alt="Profile" class="rounded-circle me-2"
+            <a class="nav-link dropdown-toggle d-flex align-items-center px-3 @((ViewContext.RouteData.Values["controller"]?.ToString() == "UserReport") ? "active shadow-sm rounded-pill bg-primary text-white" : "")"
+              href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="@Model.ProfilePicture" alt="Profile" class="rounded-circle me-2 shadow-sm"
                 style="width:32px; height:32px; object-fit:cover;">
+              <span class="fw-semibold text-dark">@Model.Name</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="userDropdown">
               <li>
-                <h6 class="dropdown-header">@Model.Name</h6>
+                <h6 class="dropdown-header text-primary fw-bold">@Model.Name</h6>
               </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
+              <li><a class="dropdown-item" asp-controller="UserJobSearcher" asp-action="Index">Job Searcher</a></li>
+              <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
               <li>
-                <a class="dropdown-item" asp-controller="UserJobSearcher" asp-action="Index">Job Searcher</a>
-              </li>
-               <li>
-                <a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a>
-              </li>
-              <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-center @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserReport" ? "active" : "")"
-                  asp-controller="UserReport" asp-action="Index">
+                <a class="dropdown-item d-flex justify-content-between align-items-center" asp-controller="UserReport"
+                  asp-action="Index">
                   Reports
                   @{
                     var unseenCount = Model.UserReports.Count(r => !r.SeenByUser);
@@ -54,18 +56,39 @@
                   }
                 </a>
               </li>
-              <li><a class="dropdown-item" asp-controller="Login" asp-action="Logout">Logout</a></li>
-
+              <li><a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">Logout</a></li>
             </ul>
           </li>
         }
         else
         {
-          <a class="nav-link text-dark @(ViewContext.RouteData.Values["controller"]?.ToString() == "Login" ? "active" : "")"
-            asp-controller="Login" asp-action="Index">Login</a>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold px-3 @((ViewContext.RouteData.Values["controller"]?.ToString() == "Login") ? "active shadow-sm rounded-pill bg-primary text-white" : "")"
+              asp-controller="Login" asp-action="Index">Login</a>
+          </li>
         }
-        </li>
       </ul>
     </div>
   </div>
 </nav>
+
+<style>
+  .text-gradient {
+    background: linear-gradient(45deg, #007bff, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .nav-link.active {
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .nav-link:hover {
+    background-color: rgba(102, 16, 242, 0.1);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+  }
+</style>
