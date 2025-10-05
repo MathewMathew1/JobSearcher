@@ -70,7 +70,9 @@ builder.Services.AddScoped<ICvParserService, CvParserService>();
 builder.Services.AddDefaultAWSOptions(awsOptions);
 builder.Services.AddAWSService<IAmazonS3>();
 
+builder.Services.AddSingleton<IEmailReportFormatter, HtmlEmailReportFormatter>();
 builder.Services.AddSingleton<IEmailService, SmtpEmailService>();
+
 
 builder.Services.AddScoped<ICvStorageService, CvStorageService>();
 builder.Services.AddScoped<IUserCvStorageService, UserCvStorage>();
