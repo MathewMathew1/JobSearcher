@@ -4,7 +4,7 @@
 @{
     var glassDoorModel =
     new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
-    
+
     var indeedModel =
     new SearchSectionViewModel { Site = Site.Indeed, Searches = Model.Where(s => s.Site == Site.Indeed).ToList() };
 
@@ -12,8 +12,20 @@
     new SearchSectionViewModel { Site = Site.PracujPl, Searches = Model.Where(s => s.Site == Site.PracujPl).ToList() };
 
 }
-<div class="container my-4">
-    <h3 class="mb-3 text-primary">Your Searches</h3>
+<div class="container my-5">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+        <div class="card-body text-center bg-gradient position-relative py-4"
+            style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+            <h3 class="fw-bold text-uppercase mb-2 text-shadow">Your Searches</h3>
+            <p class="mb-0 small opacity-75">
+                These are your saved automated job searches. They update automatically to help you find new openings.
+            </p>
+        </div>
+    </div>
+
+
+
+
 
     <div class="row">
         <div class="col-12 mb-4">
@@ -35,3 +47,18 @@
         </div>
     </div>
 </div>
+
+<style>
+    .text-shadow {
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+</style>
