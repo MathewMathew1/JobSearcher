@@ -8,96 +8,135 @@
     ViewData["Title"] = "User Reports";
 }
 
-<h2 class="mb-4">User Reports</h2>
+<div class="container ">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 text-gradient">User Reports</h1>
+        <p class="text-muted fs-5">View your latest job search summaries from multiple platforms.</p>
+    </div>
 
-@if (Model == null || !Model.Any())
-{
-    <p>No reports available.</p>
-}
-else
-{
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center shadow-sm">
+            No reports available yet. Reports are generated automatically at your scheduled time.
+        </div>
+    }
+    else
+    {
+        <div class="accordion report-container" id="reportsAccordion">
+            @for (int r = 0; r < Model.Count; r++)
+            {
+                var report = Model[r].Report;
+                var data = Model[r].Data;
+                var isNew = !report.SeenByUser;
+                var collapseId = $"collapse-{report.Id}";
+                var headingId = $"heading-{report.Id}";
 
-    <div class="accordion report-container" id="reportsAccordion">
-        @for (int r = 0; r < Model.Count; r++)
-        {
-            var report = Model[r].Report;
-            var data = Model[r].Data;
-            var isNew = Model[r].Report.SeenByUser == false;
-            var collapseId = $"collapse-{report.Id}";
-            var headingId = $"heading-{report.Id}";
+                <div class="accordion-item border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
+                    <h2 class="accordion-header" id="@headingId">
+                        <button class="accordion-button collapsed d-flex justify-content-between align-items-center fw-semibold @(isNew ? "bg-light" : "")"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#@collapseId"
+                                aria-expanded="false"
+                                aria-controls="@collapseId"
+                                data-report-id="@report.Id">
+                            <div>
+                                <i class="bi bi-envelope-paper me-2 text-primary"></i>
+                                Report generated @report.CreatedAt.ToString("f")
+                            </div>
+                            @if (isNew)
+                            {
+                                <span class="badge bg-danger ms-2">New</span>
+                            }
+                        </button>
+                    </h2>
 
-            <div class="accordion-item mb-3 shadow p-3 mb-2 bg-body rounded">
-                <h2 class="accordion-header" id="@headingId">
-                <button class="accordion-button collapsed @(report.SeenByUser ? "" : "unseen-report")"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#@collapseId"
-                        aria-expanded="false"
-                        aria-controls="@collapseId"
-                        data-report-id="@report.Id">
-                    Report @report.CreatedAt.ToString("g")
-                    @if (!report.SeenByUser)
-                    {
-                        <span class="badge bg-danger ms-2">New</span>
-                    }
-                </button>
-            </h2>
-           <div id="@collapseId"
-                 class="accordion-collapse collapse"
-                 aria-labelledby="@headingId"
-                 data-bs-parent="#reportsAccordion">
-                <div class="accordion-body">
-                        @if (data == null || data.Count == 0)
-                        {
-                            <p>No site data.</p>
-                        }
-                        else
-                        {
+                    <div id="@collapseId"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="@headingId"
+                         data-bs-parent="#reportsAccordion">
+                        <div class="accordion-body bg-light">
 
-                            <div class="accordion shadow p-3 mb-2 bg-body rounded" id="sitesAccordion-@r">
-                                @foreach (var siteData in data)
-                                {
-                                    var site = siteData.Key;
-                                    var jobs = siteData.Value;
-                               
-                                    <div class="accordion-item mb-2">
-                                        <h2 class="accordion-header" id="site-heading-@r-@site"> <button
-                                                class="accordion-button collapsed d-flex justify-content-between align-items-center"
-                                                type="button" data-bs-toggle="collapse" data-bs-target="#site-collapse-@r-@site"
-                                                aria-expanded="false" aria-controls="site-collapse-@r-@site"> <span>@site</span>
-                                          
-                 </button> </h2>
-                                        <div id="site-collapse-@r-@site" class="accordion-collapse collapse"
-                                            aria-labelledby="site-heading-@r-@site" data-bs-parent="#sitesAccordion-@r">
-                                            <div class="accordion-body">
-                                                @if (jobs == null || jobs.Count == 0)
-                                                {
-                                                    <p>No jobs found for this site.</p>
-                                                }
-                                                else
-                                                {
+                            @if (data == null || data.Count == 0)
+                            {
+                                <p class="text-muted">No site data available.</p>
+                            }
+                            else
+                            {
+                                <div class="accordion " id="sitesAccordion-@r">
+                                    @foreach (var siteData in data)
+                                    {
+                                        var site = siteData.Key;
+                                        var jobs = siteData.Value;
 
-                                                    <ul class="list-group">
-                                                        @foreach (var job in jobs)
-                                                        {
-                                                            <li class="list-group-item"> <a href="@job.Link"
-                                                                    target="_blank">@job.Name</a><br /> <small
-                                                                    class="text-muted">@job.Description</small> </li>
-                                                        }
-                     </ul>
-                                                }
-                 </div>
+                                        <div class="accordion-item mb-3 border-0 shadow-sm rounded-3">
+                                            <h2 class="accordion-header" id="site-heading-@r-@site">
+                                                <button class="accordion-button collapsed bg-white fw-semibold d-flex justify-content-between"
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#site-collapse-@r-@site"
+                                                        aria-expanded="false"
+                                                        aria-controls="site-collapse-@r-@site">
+                                                    <span>
+                                                        <i class="bi bi-globe me-2 text-secondary"></i>@site
+                                                    </span>
+                                                    <span class="ms-3 badge bg-secondary">@jobs?.Count jobs</span>
+                                                </button>
+                                            </h2>
+                                            <div id="site-collapse-@r-@site"
+                                                 class="accordion-collapse collapse"
+                                                 aria-labelledby="site-heading-@r-@site"
+                                                 data-bs-parent="#sitesAccordion-@r">
+                                                <div class="accordion-body bg-white">
+                                                    @if (jobs == null || jobs.Count == 0)
+                                                    {
+                                                        <p class="text-muted">No jobs found for this site.</p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <ul class="list-group list-group-flush">
+                                                            @foreach (var job in jobs)
+                                                            {
+                                                                <li class="list-group-item">
+                                                                    <a href="@job.Link" target="_blank" class="fw-semibold text-decoration-none text-primary">
+                                                                        @job.Name
+                                                                    </a>
+                                                                    <div class="small text-muted mt-1">
+                                                                        @job.Description
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    }
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                }
-             </div>
-                        }
-         </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
-        }
-     </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+.text-gradient {
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
+
+.accordion-button:not(.collapsed) {
+    background-color: #f8f9fa;
+}
+
+.unseen-report {
+    border-left: 5px solid #dc3545;
+}
+</style>
 
 @section Scripts {
 
