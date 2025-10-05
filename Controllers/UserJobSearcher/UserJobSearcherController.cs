@@ -61,7 +61,7 @@ namespace UserJobSearcher.Controllers
                     return Unauthorized();
                 }
 
-                if (user.UserSearches.Count >= 3)
+                if (user.UserSearches.Count( us => us.Site == searchInfo.Site) >= 3)
                     {
                         return BadRequest(new { error = "Maximum of 3 searches allowed for this site." });
                     }
