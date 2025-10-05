@@ -17,5 +17,6 @@ namespace JobSearcher.Account
         public ICollection<JobOpeningSearcherModel> UserSearches { get; set; } = new List<JobOpeningSearcherModel>();
         public ICollection<UserReportModel> UserReports { get; set; } = new List<UserReportModel>();
         public CvInDatabase? UserCv { get; set; }
+                
     }
 }

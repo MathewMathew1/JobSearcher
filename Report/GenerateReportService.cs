@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using JobSearch.Emails;
+using JobSearcher.Account;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using JobSearcher.UserReport;
@@ -13,14 +15,21 @@ namespace JobSearcher.Report
         private readonly IJobOpeningSearcher _jobOpeningSearcher;
         private readonly IUserFetchedLinkRepository _userFetchedLinkRepository;
         private readonly IDictionary<Site, IJobSearcherAdapter> _searcherAdapters = new Dictionary<Site, IJobSearcherAdapter>();
+        private readonly IEmailReportFormatter _emailReportFormatter;
+        private readonly IEmailService _emailService;
+        private readonly IAccount _accountService;
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
         GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IUserFetchedLinkRepository userFetchedLinkRepository,
-        IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter)
+        IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter,
+        IEmailReportFormatter emailReportFormatter, IEmailService emailService, IAccount accountService)
         {
             _logger = logger;
             _userReportService = userReportService;
             _jobOpeningSearcher = jobOpeningSearcher;
+            _emailReportFormatter = emailReportFormatter;
+            _emailService = emailService;
+            _accountService = accountService;
 
             _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
             _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
@@ -61,7 +70,18 @@ namespace JobSearcher.Report
                     });
             }
             _ = _userFetchedLinkRepository.SaveLinksAsync(userId, searchedLink.NewLinks);
+          
+            var htmlBody = _emailReportFormatter.FormatReport(resultsBySite, userId);
+
+            var userData = await _accountService.GetEmailAndCvByUserId(userId);
+            _  = _emailService.SendEmailAsync(
+                userData.Value.Email,
+                "Your Daily Job Report",
+                htmlBody,
+                "Please open the email in HTML-capable client."
+            );
             await _userReportService.AddUserReport(resultsBySite, userId);
+
             _logger.LogInformation("Generated report for user {UserId}, {Sites} sites processed", userId, resultsBySite.Count);
 
         }

@@ -1,3 +1,4 @@
+using JobSearcher.Cv;
 using JobSearcher.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,22 @@ namespace JobSearcher.Account
             .AsSplitQuery()
             .FirstOrDefaultAsync(user => user.Id == id);
         }
+        
+        public async Task<(string Email, CvInDatabase? UserCv)?> GetEmailAndCvByUserId(int userId)
+        {
+            return await _database.Users
+                .Where(u => u.Id == userId)
+                .Select(u => new
+                {
+                    u.Email,
+                    u.UserCv
+                })
+                .FirstOrDefaultAsync() is { } result
+                ? (result.Email, result.UserCv)
+                : null;
+        }
+
+
 
         public async Task<UserInDatabase> SetUser(User user)
         {
