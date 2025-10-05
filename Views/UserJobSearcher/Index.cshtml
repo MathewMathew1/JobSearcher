@@ -4,8 +4,12 @@
 @{
     var glassDoorModel =
     new SearchSectionViewModel { Site = Site.GlassDoor, Searches = Model.Where(s => s.Site == Site.GlassDoor).ToList() };
+    
     var indeedModel =
     new SearchSectionViewModel { Site = Site.Indeed, Searches = Model.Where(s => s.Site == Site.Indeed).ToList() };
+
+    var praculPlModel =
+    new SearchSectionViewModel { Site = Site.PracujPl, Searches = Model.Where(s => s.Site == Site.PracujPl).ToList() };
 
 }
 <div class="container my-4">
@@ -16,6 +20,7 @@
 
             @await Html.PartialAsync("SearchSection/_SearchSection", glassDoorModel)
             @await Html.PartialAsync("SearchSection/_SearchSection", indeedModel)
+            @await Html.PartialAsync("SearchSection/_SearchSection", praculPlModel)
         </div>
 
         <div class="col-12">
