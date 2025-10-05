@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Amazon.Runtime;
 using OpenAI.Chat;
 using JobSearcher.AiAnalyzer;
+using JobSearch.Emails;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,11 +61,16 @@ var awsOptions = new AWSOptions
 
 string openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+
 builder.Services.AddSingleton<IJobAnalyzerService, HuggingFaceJobAnalyzerService>();
 builder.Services.AddScoped<ICvParserService, CvParserService>();
 
 builder.Services.AddDefaultAWSOptions(awsOptions);
 builder.Services.AddAWSService<IAmazonS3>();
+
+builder.Services.AddSingleton<IEmailService, SmtpEmailService>();
 
 builder.Services.AddScoped<ICvStorageService, CvStorageService>();
 builder.Services.AddScoped<IUserCvStorageService, UserCvStorage>();
