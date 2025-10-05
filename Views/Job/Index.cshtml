@@ -1,17 +1,16 @@
 @using JobSearcher.JobOpening
 @model JobSearcher.JobOpening.JobOpeningSearcherModel
 @{
-    ViewData["Title"] = "Jobs search";
+    ViewData["Title"] = "Jobs Search";
 }
-
 
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="fw-bold display-5 text-primary">Job Searcher</h1>
-        <p class="text-muted">Find your next opportunity faster</p>
+        <h1 class="fw-bold display-5 text-primary">JobSearcher</h1>
+        <p class="text-muted fs-5">Find your next opportunity faster across multiple platforms</p>
     </div>
 
-    <div class="accordion shadow-sm rounded-3" id="jobSearchAccordion">
+    <div class="accordion shadow-sm rounded-3 mb-5" id="jobSearchAccordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingSearch">
                 <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
@@ -33,8 +32,7 @@
                         </div>
                         <div class="col-md-4">
                             <label asp-for="JobSearched" class="form-label fw-semibold"></label>
-                            <input asp-for="JobSearched" class="form-control"
-                                placeholder="Software Engineer, Designer..." />
+                            <input asp-for="JobSearched" class="form-control" placeholder="Software Engineer, Designer..." />
                             <span asp-validation-for="JobSearched" class="text-danger small"></span>
                         </div>
                         <div class="col-md-4">
@@ -46,15 +44,16 @@
                         <div class="col-md-4 d-none" id="countryCodeDiv">
                             <label asp-for="CountryCode" class="form-label fw-semibold">Country Code</label>
                             <input type="text" class="form-control" name="CountryCode" asp-for="CountryCode"
-                                placeholder="e.g. US, UK" required />
+                                   placeholder="e.g. US, UK" required />
                         </div>
 
                         <div class="col-12">
-                            <div id="jobSearchError" class="alert alert-danger mt-2" style="display:none;"></div>
+                            <div id="jobSearchError" class="alert alert-danger mt-2 d-none"></div>
                         </div>
+
                         <div class="col-12 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-search"></i> Search
+                                <i class="bi bi-search me-2"></i>Search
                             </button>
                         </div>
                     </form>
@@ -64,10 +63,13 @@
     </div>
 
     <div class="mt-5">
-        <h2 class="fw-bold mb-3">Job Openings</h2>
-        <ul id="jobSearchResults" class="list-group list-group-flush shadow-sm rounded-3 job-search-container"></ul>
+        <h2 class="fw-bold mb-4">Job Openings</h2>
+        <div id="jobSearchResults" class="row g-4">
+
+        </div>
     </div>
 </div>
+
 
 @section Scripts {
     <script>
