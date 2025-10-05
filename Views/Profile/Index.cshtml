@@ -6,62 +6,90 @@
 }
 
 <div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body text-center text-white py-4"
+             style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+            <h2 class="fw-bold text-uppercase text-shadow mb-2">CV Management</h2>
+            <p class="small opacity-75 mb-0">
+                Upload, replace, or download your CV. This file is used for job analysis and report personalization.
+            </p>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-8">
-
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4">
 
-                    <h2 class="mb-4">Upload Your CV</h2>
+                    <h4 class="fw-semibold mb-4 text-primary">Upload or Replace CV</h4>
 
                     <div id="uploadAlert" class="alert d-none" role="alert"></div>
 
-                    <form id="cvUploadForm" enctype="multipart/form-data">
+                    <form id="cvUploadForm" enctype="multipart/form-data" class="mb-4">
                         <div class="mb-3">
-                            <label for="cvFile" class="form-label fw-semibold">Select your CV (PDF or Word)</label>
-                            <input class="form-control" type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx"
-                                required />
+                            <label for="cvFile" class="form-label fw-semibold">Select CV File</label>
+                            <input class="form-control shadow-sm" type="file" id="cvFile" name="file"
+                                   accept=".pdf,.doc,.docx" required />
+                            <div class="form-text">Accepted formats: PDF, DOC, DOCX (max 5 MB).</div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
-                            <i class="bi bi-upload me-2"></i>Upload CV
-                        </button>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4" id="uploadBtn">
+                                <i class="bi bi-upload me-2"></i>Upload CV
+                            </button>
+                        </div>
                     </form>
 
                     <hr class="my-4">
 
-                    <div>
-                        <h4 class="mb-3">Current CV</h4>
-                        <div id="currentCvList" class="list-group">
+                    <h5 class="fw-bold text-secondary mb-3">Current CV</h5>
 
-                            <div id="existing-cv"
-                                class="list-group-item d-flex justify-content-between align-items-center @(Model?.UserCv != null ? "" : "d-none")">
-                                <span>@Model?.UserCv?.Filename</span>
-                                <div>
-                                    <a href="@Url.Action("GetCv", "Profile")"
-                                        class="btn btn-sm btn-outline-secondary me-2">
-                                        <i class="bi bi-download"></i> Download
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" id="deleteCvBtn">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
+                    <div id="currentCvList" class="list-group rounded-3 shadow-sm">
+                        <div id="existing-cv"
+                             class="list-group-item d-flex justify-content-between align-items-center border-0 @(Model?.UserCv != null ? "" : "d-none")">
+                            <div class="fw-semibold text-truncate" style="max-width: 70%;">
+                                <i class="bi bi-file-earmark-text me-2 text-primary"></i>@Model?.UserCv?.Filename
                             </div>
+                            <div>
+                                <a href="@Url.Action("GetCv", "Profile")"
+                                   class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="deleteCvBtn">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
 
-
-
-                            <div id="no-cv" class="list-group-item text-muted @(Model.UserCv == null ? "" : "d-none")">No CV
-                                uploaded yet.</div>
-
+                        <div id="no-cv"
+                             class="list-group-item text-center text-muted py-3 @(Model.UserCv == null ? "" : "d-none")">
+                            <i class="bi bi-exclamation-circle me-2"></i>No CV uploaded yet.
                         </div>
                     </div>
 
                 </div>
             </div>
 
+            <div class="alert alert-info text-center mt-4 shadow-sm rounded-3 small">
+                This section allows you to manage your CV. The uploaded document is analyzed to improve
+                job recommendations and compatibility insights.
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+.text-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+
+
+.card:hover {
+    transform: scale(1.0);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+</style>
 
 
 @section Scripts {
