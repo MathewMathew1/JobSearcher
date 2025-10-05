@@ -5,84 +5,120 @@
 }
 
 
-<div class="container mt-4 ps-0">
-    <h2>Report Schedule</h2>
+<div class="container mt-5">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body text-center bg-gradient py-4"
+             style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+            <h2 class="fw-bold text-uppercase mb-2 text-shadow">Report Schedule</h2>
+            <p class="small mb-0 opacity-75">
+                Manage when and how you receive automated job reports according to your local timezone.
+            </p>
+        </div>
+    </div>
 
-    <div id="report-schedule-container ">
-
-        <div class="card mb-3 @(Model != null ? "" : "d-none")" id="card-schedule">
+    <div id="report-schedule-container">
+        <div class="card border-0 shadow-sm rounded-4 mb-4 @(Model != null ? "" : "d-none")" id="card-schedule">
             <div class="card-body">
-                <p><strong>Time Zone:</strong> <span id="schedule-region">@Model.TimeZoneId</span></p>
-                <p><strong>Status:</strong> <span id="schedule-status">@(Model.IsActive ? "Active" : "Inactive")</span></p>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1 fw-semibold"><i class="bi bi-globe"></i> Time Zone:</p>
+                        <p class="text-muted" id="schedule-region">@Model.TimeZoneId</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1 fw-semibold"><i class="bi bi-lightning-charge"></i> Status:</p>
+                        <p class="@(Model.IsActive ? "text-success" : "text-danger") fw-semibold" id="schedule-status">
+                            @(Model.IsActive ? "Active" : "Inactive")
+                        </p>
+                    </div>
+                </div>
 
-                <ul class="list-group mb-2">
+                <h5 class="fw-bold mb-2">Scheduled Report Times</h5>
+                <ul class="list-group mb-4 shadow-sm rounded-3">
                     @foreach (var time in Model.ReportTimes)
                     {
-                        <li class="list-group-item">@time.LocalTime.ToString(@"hh\:mm")</li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">@time.LocalTime.ToString(@"hh\:mm")</span>
+                            <i class="bi bi-clock text-primary"></i>
+                        </li>
                     }
                     @if (!Model.ReportTimes.Any())
                     {
-                        <li class="list-group-item text-muted">No report times set.</li>
+                        <li class="list-group-item text-muted text-center">No report times set.</li>
                     }
                 </ul>
 
-               <div class="card shadow-sm rounded-3 mt-3">
-                <div class="card-body">
-                    <h5 class="card-title fw-semibold mb-3">Schedule Settings</h5>
-                    <div class="mb-3">
-                        <label for="TimeZoneIdUpdate" class="form-label">Time Zone</label>
-                        <select id="TimeZoneIdUpdate" class="form-select"></select>
-                    </div>
-                    <div class="form-check form-switch mb-4">
-                        <input class="form-check-input" type="checkbox" id="IsActiveUpdate"
-                            @(Model?.IsActive == true ? "checked" : "") />
-                        <label class="form-check-label fw-semibold" for="IsActiveUpdate">Active</label>
-                    </div>
+                <div class="card border-0 shadow-sm rounded-3 mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-3 text-primary">Schedule Settings</h5>
 
-                    <div class="d-flex justify-content-end">
-                        <button id="update-schedule-btn" class="btn btn-success px-4">
-                            <i class="bi bi-check-circle"></i> Update Schedule
-                        </button>
+                        <div class="mb-3">
+                            <label for="TimeZoneIdUpdate" class="form-label fw-semibold">Time Zone</label>
+                            <select id="TimeZoneIdUpdate" class="form-select"></select>
+                        </div>
+
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="IsActiveUpdate"
+                                   @(Model?.IsActive == true ? "checked" : "") />
+                            <label class="form-check-label fw-semibold" for="IsActiveUpdate">Active</label>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button id="update-schedule-btn" class="btn btn-success px-4">
+                                <i class="bi bi-check-circle me-2"></i>Update Schedule
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                @await Html.PartialAsync("HourPicker/_HourPicker", Model.ReportTimes)
             </div>
-
-            @await Html.PartialAsync("HourPicker/_HourPicker", Model.ReportTimes)
         </div>
 
-
-
-
-        <div class="alert alert-info no-report-schedule @(Model != null ? "d-none" : "")">You do not have a report schedule yet.
+        <div class="alert alert-info no-report-schedule text-center shadow-sm rounded-3 @(Model != null ? "d-none" : "")">
+            You do not have a report schedule yet.
         </div>
-
     </div>
 
     @if (Model == null)
     {
-        <form id="create-schedule-form" class="mb-3">
-            <div class="mb-2">
-                <label for="TimeZoneId" class="form-label">Time Zone</label>
-                <select id="TimeZoneId" name="TimeZoneId" class="form-control" required>
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold text-primary mb-3">Create New Schedule</h5>
+            <form id="create-schedule-form" class="mb-3">
+                <div class="mb-3">
+                    <label for="TimeZoneId" class="form-label fw-semibold">Time Zone</label>
+                    <select id="TimeZoneId" name="TimeZoneId" class="form-control" required></select>
+                </div>
 
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" checked />
+                    <label class="form-check-label fw-semibold" for="IsActive">Active</label>
+                </div>
 
-                </select>
-            </div>
-
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" checked />
-                <label class="form-check-label" for="IsActive">
-                    Active
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Create Schedule</button>
-        </form>
-
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-plus-circle me-2"></i>Create Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
     }
 </div>
+
+<style>
+.text-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.card {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+</style>
+
 
 <script src="~/js/toast.js" asp-append-version="true"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
