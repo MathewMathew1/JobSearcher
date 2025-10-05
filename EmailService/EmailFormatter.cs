@@ -24,7 +24,7 @@ namespace JobSearch.Emails
             sb.AppendLine(".job-desc { font-size: 14px; color: #444; }");
             sb.AppendLine("</style></head><body>");
 
-            sb.AppendLine($"<div class='header'>Job Report for User #{userId}</div>");
+            sb.AppendLine($"<div class='header'>Job Reports</div>");
 
             foreach (var siteEntry in resultsBySite)
             {
