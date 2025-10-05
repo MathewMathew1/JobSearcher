@@ -1,5 +1,6 @@
 using Microsoft.Playwright;
 using HtmlAgilityPack;
+using JobSearch.Utils;
 
 namespace JobSearcher.Job
 {
@@ -45,14 +46,28 @@ namespace JobSearcher.Job
                         break;
 
                     await jobNode.ScrollIntoViewIfNeededAsync();
-                    await page.WaitForTimeoutAsync(300); 
+                    await page.WaitForTimeoutAsync(300);
 
                     var titleHandle = await jobNode.QuerySelectorAsync("a[data-test='job-title']");
                     var link = await titleHandle?.GetAttributeAsync("href");
+                    
                     var title = titleHandle != null ? await titleHandle.InnerTextAsync() : "Unknown";
 
                     if (string.IsNullOrEmpty(link))
                         continue;
+
+                    link = link.StartsWith("http") ? link : "https://www.glassdoor.com" + link;
+                    var normalizeLink = LinkHelper.NormalizeLink(link);
+
+                    lock (_lock)
+                    {
+                        if (searchedLinks.SearchedInDatabase.Contains(normalizeLink) || searchedLinks.NewLinks.Contains(normalizeLink))
+                        {
+                            continue;
+                        }
+
+                        searchedLinks.NewLinks.Add(normalizeLink);
+                    }
 
                     lock (_lock)
                     {
@@ -90,7 +105,7 @@ namespace JobSearcher.Job
                     jobs.Add(new JobInfo
                     {
                         Name = title,
-                        Link = link.StartsWith("http") ? link : "https://www.glassdoor.com" + link,
+                        Link = normalizeLink,
                         Description = $"{employer} | {location} | {salary}",
                         ExtensiveDescription = extensiveDescription,
                         ImageLink = img

@@ -1,5 +1,6 @@
 using Microsoft.Playwright;
 using HtmlAgilityPack;
+using JobSearch.Utils;
 
 namespace JobSearcher.Job
 {
@@ -51,13 +52,16 @@ namespace JobSearcher.Job
 
                         if (link == null) continue;
                         link = link.StartsWith("http") ? link : "https://www.pracuj.pl" + link;
+                        var normalizeLink = LinkHelper.NormalizeLink(link);
 
                         lock (_lock)
                         {
-                            if (searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                            if (searchedLinks.SearchedInDatabase.Contains(normalizeLink) || searchedLinks.NewLinks.Contains(normalizeLink))
+                            {
                                 continue;
+                            }
 
-                            searchedLinks.NewLinks.Add(link);
+                            searchedLinks.NewLinks.Add(normalizeLink);
                         }
 
                         var title = linkNode.InnerText.Trim();
@@ -93,7 +97,7 @@ namespace JobSearcher.Job
                         jobs.Add(new JobInfo
                         {
                             Name = title ?? "Unknown",
-                            Link = link.StartsWith("http") ? link : "https://www.pracuj.pl" + link,
+                            Link = normalizeLink,
                             Description = $"{employer} | {location} | {salary}",
                             ImageLink = img,
                             ExtensiveDescription = requirementsText

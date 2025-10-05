@@ -1,5 +1,6 @@
 using Microsoft.Playwright;
 using HtmlAgilityPack;
+using JobSearch.Utils;
 
 namespace JobSearcher.Job
 {
@@ -38,11 +39,10 @@ namespace JobSearcher.Job
                     if (totalCollected >= maxAmount)
                         break;
 
-                    // Scroll and click card to open description
+
                     await card.ScrollIntoViewIfNeededAsync();
                     await card.ClickAsync();
 
-                    // Wait for description to appear / update
                     var descElement = await page.WaitForSelectorAsync(
                         "div#jobDescriptionText",
                         new PageWaitForSelectorOptions { Timeout = 10000 }
@@ -52,7 +52,6 @@ namespace JobSearcher.Job
                     if (descElement != null)
                         description = await descElement.InnerTextAsync();
 
-                    // Extract basic info from card
                     var title = await card.QuerySelectorAsync("h2.jobTitle span") is IElementHandle t
                         ? await t.InnerTextAsync()
                         : "Unknown";
@@ -67,11 +66,16 @@ namespace JobSearcher.Job
                     if (string.IsNullOrEmpty(link))
                         continue;
 
+                    var normalizeLink = LinkHelper.NormalizeIndeedLink(link);
+
                     lock (_lock)
                     {
-                        if (searchedLinks.SearchedInDatabase.Contains(link) || searchedLinks.NewLinks.Contains(link))
+                        if (searchedLinks.SearchedInDatabase.Contains(normalizeLink) || searchedLinks.NewLinks.Contains(normalizeLink))
+                        {
                             continue;
-                        searchedLinks.NewLinks.Add(link);
+                        }
+
+                        searchedLinks.NewLinks.Add(normalizeLink);
                     }
 
                     var employer = await card.QuerySelectorAsync("span[data-testid='company-name']") is IElementHandle e
@@ -89,7 +93,7 @@ namespace JobSearcher.Job
                     jobs.Add(new JobInfo
                     {
                         Name = title,
-                        Link = link,
+                        Link = normalizeLink,
                         Description = $"{employer} | {locationText} | {salary}",
                         ExtensiveDescription = description,
                         ImageLink = null
@@ -98,9 +102,11 @@ namespace JobSearcher.Job
                     totalCollected++;
                 }
 
-                // Go to next page if needed
+
                 if (totalCollected >= maxAmount)
+                {
                     break;
+                }
 
                 var nextButton = await page.QuerySelectorAsync("a[aria-label='Next']");
                 if (nextButton == null) break;

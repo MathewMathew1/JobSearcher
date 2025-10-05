@@ -27,7 +27,7 @@ namespace JobSearcher.Account
             .AsSplitQuery()
             .FirstOrDefaultAsync(user => user.Id == id);
         }
-        
+
         public async Task<(string Email, CvInDatabase? UserCv)?> GetEmailAndCvByUserId(int userId)
         {
             return await _database.Users
