@@ -1,74 +1,101 @@
 @using JobSearcher.JobOpening
 @model JobSearcher.JobOpening.JobOpeningSearcherModel
 @{
-    ViewData["Title"] = "Jobs Search";
+    ViewData["Title"] = "Job Search";
 }
 
-<div class="container py-5">
+<div class="container pb-5">
+
     <div class="text-center mb-5">
-        <h1 class="fw-bold display-5 text-primary">JobSearcher</h1>
-        <p class="text-muted fs-5">Find your next opportunity faster across multiple platforms</p>
+        <h1 class="fw-bold display-5 text-gradient">JobSearcher</h1>
+        <p class="text-muted fs-5">Your unified job discovery platform.</p>
     </div>
 
-    <div class="accordion shadow-sm rounded-3 mb-5" id="jobSearchAccordion">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingSearch">
-                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#JobSearchModel" aria-expanded="false" aria-controls="JobSearchModel">
-                    Job Search
-                </button>
-            </h2>
-            <div id="JobSearchModel" class="accordion-collapse collapse" aria-labelledby="headingSearch">
-                <div class="accordion-body bg-light">
-                    <form id="jobSearchForm" asp-controller="Job" asp-action="SearchJobs" method="get" class="row g-3">
-                        <div class="col-md-4">
-                            <label asp-for="Site" class="form-label fw-semibold"></label>
-                            <select asp-for="Site" class="form-select" id="siteSelect">
-                                @foreach (var site in Enum.GetValues(typeof(Site)))
-                                {
-                                    <option value="@site">@site</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="JobSearched" class="form-label fw-semibold"></label>
-                            <input asp-for="JobSearched" class="form-control" placeholder="Software Engineer, Designer..." />
-                            <span asp-validation-for="JobSearched" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label asp-for="Location" class="form-label fw-semibold"></label>
-                            <input asp-for="Location" class="form-control" placeholder="City, Country" />
-                            <span asp-validation-for="Location" class="text-danger small"></span>
-                        </div>
-
-                        <div class="col-md-4 d-none" id="countryCodeDiv">
-                            <label asp-for="CountryCode" class="form-label fw-semibold">Country Code</label>
-                            <input type="text" class="form-control" name="CountryCode" asp-for="CountryCode"
-                                   placeholder="e.g. US, UK" required />
-                        </div>
-
-                        <div class="col-12">
-                            <div id="jobSearchError" class="alert alert-danger mt-2 d-none"></div>
-                        </div>
-
-                        <div class="col-12 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-search me-2"></i>Search
-                            </button>
-                        </div>
-                    </form>
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="row g-0">
+            <div class="col-lg-8 d-flex flex-column justify-content-center p-5 bg-light">
+                <h3 class="fw-bold text-primary mb-3">Smart Search, Real Results</h3>
+                <p class="text-secondary fs-5">
+                    This section lets you experiment with search queries before saving them to your account. 
+                    You can test different keywords, locations, or platforms to optimize your automated reports.
+                </p>
+                <p class="text-muted mb-0">
+                    Once satisfied, you can create recurring searches that will automatically collect and email 
+                    relevant jobs to you without duplicates.
+                </p>
+            </div>
+            <div class="col-lg-4 bg-primary d-flex align-items-center justify-content-center text-white p-4">
+                <div>
+                    <i class="bi bi-briefcase-fill display-1 mb-3"></i>
+                    <h4 class="fw-semibold">Try your search below</h4>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-5">
-        <h2 class="fw-bold mb-4">Job Openings</h2>
-        <div id="jobSearchResults" class="row g-4">
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="fw-semibold mb-0"><i class="bi bi-search me-2"></i>Job Search</h4>
+        </div>
+        <div class="card-body bg-light">
+            <form id="jobSearchForm" asp-controller="Job" asp-action="SearchJobs" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="Site" class="form-label fw-semibold"></label>
+                    <select asp-for="Site" class="form-select" id="siteSelect">
+                        @foreach (var site in Enum.GetValues(typeof(Site)))
+                        {
+                            <option value="@site">@site</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="JobSearched" class="form-label fw-semibold"></label>
+                    <input asp-for="JobSearched" class="form-control" placeholder="Software Engineer, Designer..." />
+                    <span asp-validation-for="JobSearched" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Location" class="form-label fw-semibold"></label>
+                    <input asp-for="Location" class="form-control" placeholder="City, Country" />
+                    <span asp-validation-for="Location" class="text-danger small"></span>
+                </div>
 
+                <div class="col-md-4 d-none" id="countryCodeDiv">
+                    <label asp-for="CountryCode" class="form-label fw-semibold">Country Code</label>
+                    <input type="text" class="form-control" name="CountryCode" asp-for="CountryCode" placeholder="e.g. US, UK" required />
+                </div>
+
+                <div class="col-12">
+                    <div id="jobSearchError" class="alert alert-danger mt-2 d-none"></div>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-search me-2"></i>Search
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="fw-semibold mb-0"><i class="bi bi-list-ul me-2"></i>Job Openings</h4>
+        </div>
+        <div class="card-body">
+            <div id="jobSearchResults" class="row g-4">
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<style>
+.text-gradient {
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style>
 
 
 @section Scripts {
