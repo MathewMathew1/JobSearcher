@@ -5,6 +5,10 @@ using JobSearcher.Api.MiddleWare;
 
 namespace UserJobSearcher.Controllers
 {
+    public class UserDataWithReports {
+
+    }
+
     [Route("[controller]")]
     public class UserReportController : Controller
     {
