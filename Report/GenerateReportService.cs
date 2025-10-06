@@ -46,10 +46,9 @@ namespace JobSearcher.Report
 
         public async Task GenerateReportForUser(int userId, bool analyzeMatch)
         {
-            // Start fetching user data immediately
+
             var userDataTask = _accountService.GetEmailAndCvByUserId(userId);
 
-            // Chain CV retrieval (runs only when user data is ready)
             var cvContentTask = userDataTask.ContinueWith(async t =>
             {
                 var userData = t.Result.Value;

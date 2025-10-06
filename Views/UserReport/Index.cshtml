@@ -104,6 +104,20 @@
                                                                             @job.Name
                                                                         </a>
                                                                         <div class="small text-muted mt-1">@job.Description</div>
+                                                            @if (job.MatchToUserCv.HasValue)
+                                                                        {
+                                                                          
+                                                                                var score = job.MatchToUserCv.Value; // 0..1
+                                                                                string color;
+                                                                                if (score < 0.4) color = "#ff4d4f";       // red
+                                                                                else if (score < 0.6) color = "#ffa500";  // orange
+                                                                                else if (score < 0.8) color = "#a3d977";  // light green
+                                                                                else color = "#28a745";                   // green
+                                                                            
+                                                                            <div class="mt-1" style="font-weight:bold; color:@color;">
+                                                                                Match to your CV: @(score * 100)%
+                                                                            </div>
+                                                                        }
                                                                     </div>
                                                                     <button class="btn btn-outline-primary btn-sm analyze-btn mt-2 mt-md-0"
                                                                             data-jobname="@job.Name"
@@ -153,6 +167,7 @@
     <script>
         $(document).on('show.bs.collapse', '.accordion-collapse', function () {
             var button = $(this).prev().find('.accordion-button.unseen-report');
+            console.log(button)
             if (button.length) {
                 var reportId = button.data('report-id');
                 $.ajax({
