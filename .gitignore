@@ -69,3 +69,5 @@ _TeamCity*
 
 .obj
 .bin
+
+.app.db
