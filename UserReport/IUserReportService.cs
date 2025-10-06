@@ -10,5 +10,6 @@ namespace JobSearcher.UserReport
         Task<int> GetUnseenReportsCount(int userId);
         Task MarkReportAsSeen(int reportId, int userId);
         Task<List<(UserReportModel Report, ConcurrentDictionary<Site, List<JobInfo>> Data)>> GetUserReportsAsync(int userId, bool? seenByUser = null);
+
     }
 }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using JobSearcher.Account;
 
 namespace JobSearcher.Cv
@@ -11,6 +12,8 @@ namespace JobSearcher.Cv
         public required string AwsS3Key { get; set; }
         public required DateTime UploadedAt { get; set; }
         public DateTime? LastUpdated { get; set; }
+
+        [JsonIgnore]
         public UserInDatabase User { get; set; }
     }
 }

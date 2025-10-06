@@ -15,6 +15,7 @@ namespace JobSearcher.Report
         public string TimeZoneId { get; set; } = default!;
 
         public bool IsActive { get; set; } = true;
+        public bool AnalyzeDescriptionsWithCv { get; set; } = true;
         public UserInDatabase User { get; set; } = default!;
 
         public ICollection<ReportTime> ReportTimes { get; set; } = new List<ReportTime>();
@@ -39,6 +40,7 @@ namespace JobSearcher.Report
         [ValidTimeZone]
         public required string TimeZoneId { get; set; }
         public required bool IsActive { get; set; }
+        public bool AnalyzeDescriptionsWithCv { get; set; } 
     }
     
 }

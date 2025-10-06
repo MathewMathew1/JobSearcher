@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using JobSearch.Emails;
+using JobSearch.Utils;
 using JobSearcher.Account;
+using JobSearcher.AiAnalyzer;
 using JobSearcher.Job;
 using JobSearcher.JobOpening;
 using JobSearcher.UserReport;
@@ -18,11 +20,14 @@ namespace JobSearcher.Report
         private readonly IEmailReportFormatter _emailReportFormatter;
         private readonly IEmailService _emailService;
         private readonly IAccount _accountService;
+        private readonly ICvUtils _cvUtils;
+        private readonly IJobAnalyzerService _jobAnalyzeService;
 
         public GenerateReportService(ILogger<GenerateReportService> logger, IUserReportService userReportService, IJobOpeningSearcher jobOpeningSearcher,
         GlassDoorJobSearchAdapter glassDoorJobSearcherAdapter, IUserFetchedLinkRepository userFetchedLinkRepository,
         IndeedJobSearcherAdapter indeedJobSearcherAdapter, PracujPlSearchAdapter pracujPlSearchAdapter,
-        IEmailReportFormatter emailReportFormatter, IEmailService emailService, IAccount accountService)
+        IEmailReportFormatter emailReportFormatter, IEmailService emailService, IAccount accountService, ICvUtils cvUtils,
+        IJobAnalyzerService jobAnalyzerService)
         {
             _logger = logger;
             _userReportService = userReportService;
@@ -30,6 +35,8 @@ namespace JobSearcher.Report
             _emailReportFormatter = emailReportFormatter;
             _emailService = emailService;
             _accountService = accountService;
+            _jobAnalyzeService = jobAnalyzerService;
+            _cvUtils = cvUtils;
 
             _searcherAdapters.Add(Site.GlassDoor, glassDoorJobSearcherAdapter);
             _searcherAdapters.Add(Site.Indeed, indeedJobSearcherAdapter);
@@ -37,14 +44,28 @@ namespace JobSearcher.Report
             _userFetchedLinkRepository = userFetchedLinkRepository;
         }
 
-        public async Task GenerateReportForUser(int userId)
+        public async Task GenerateReportForUser(int userId, bool analyzeMatch)
         {
+            // Start fetching user data immediately
+            var userDataTask = _accountService.GetEmailAndCvByUserId(userId);
+
+            // Chain CV retrieval (runs only when user data is ready)
+            var cvContentTask = userDataTask.ContinueWith(async t =>
+            {
+                var userData = t.Result.Value;
+                if (userData.UserCv == null)
+                {
+                    return (string?)null;
+                }
+
+                return await _cvUtils.GetContentOfCvByUserIdAsync(userData.UserCv);
+            }).Unwrap();
+
             var searches = await _jobOpeningSearcher.GetSearchesByUser(userId);
-
             var resultsBySite = new ConcurrentDictionary<Site, List<JobInfo>>();
-
             var searchedLinks = await _userFetchedLinkRepository.GetAllLinksAsync(userId);
-            SearchedLink searchedLink = new SearchedLink
+
+            var searchedLink = new SearchedLink
             {
                 SearchedInDatabase = searchedLinks,
                 NewLinks = new ConcurrentBag<string>()
@@ -69,21 +90,59 @@ namespace JobSearcher.Report
                         return existing;
                     });
             }
+
+            var userData = await userDataTask;
             _ = _userFetchedLinkRepository.SaveLinksAsync(userId, searchedLink.NewLinks);
-          
+
+            string? cvContent = null;
+            if (userData.Value.UserCv != null && analyzeMatch)
+            {
+                cvContent = await cvContentTask;
+            }
+
+
+
+
+            Task<float[]>? matchResultsTask = null;
+
+            if (cvContent != null)
+            {
+                var allJobs = resultsBySite
+                    .SelectMany(kv => kv.Value)
+                    .ToList();
+
+                matchResultsTask = _jobAnalyzeService.AnalyzeJobDescriptionsAsync(
+                    cvContent,
+                    allJobs.Select(j => j.Description).ToList()
+                );
+            }
+
+            float[]? matchResults = null;
+            if (matchResultsTask != null)
+            {
+                matchResults = await matchResultsTask;
+                int i = 0;
+                foreach (var job in resultsBySite.SelectMany(kv => kv.Value))
+                {
+                    if (i < matchResults.Length)
+                        job.MatchToUserCv = matchResults[i];
+                    i++;
+                }
+            }
+
             var htmlBody = _emailReportFormatter.FormatReport(resultsBySite, userId);
 
-            var userData = await _accountService.GetEmailAndCvByUserId(userId);
-            _  = _emailService.SendEmailAsync(
+            _ = _emailService.SendEmailAsync(
                 userData.Value.Email,
                 "Your Daily Job Report",
                 htmlBody,
                 "Please open the email in HTML-capable client."
             );
+
             await _userReportService.AddUserReport(resultsBySite, userId);
 
             _logger.LogInformation("Generated report for user {UserId}, {Sites} sites processed", userId, resultsBySite.Count);
-
         }
+
     }
 }

@@ -61,6 +61,11 @@
                                    @(Model?.IsActive == true ? "checked" : "") />
                             <label class="form-check-label fw-semibold" for="IsActiveUpdate">Active</label>
                         </div>
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="AnalyzeDescriptionsWithCv"
+                                   @(Model?.IsActive == true ? "checked" : "") />
+                            <label class="form-check-label fw-semibold" for="AnalyzeDescriptionsWithCv">Analyze jobs with cv</label>
+                        </div>
 
                         <div class="d-flex justify-content-end">
                             <button id="update-schedule-btn" class="btn btn-success px-4">
@@ -109,12 +114,10 @@
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.card {
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
-}
+
 
 .card:hover {
-    transform: scale(1.01);
+    transform: scale(1.0);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 </style>
@@ -150,17 +153,24 @@
         document.getElementById("update-schedule-btn").addEventListener("click", function () {
             const updatedTimeZone = tzSelectUpdate.value;
             const isActive = document.getElementById("IsActiveUpdate").checked;
+            const analyzeWithCv = document.getElementById("AnalyzeDescriptionsWithCv").checked;
 
             $.ajax({
                 url: '/user/report/update',
                 type: 'PATCH',
                 contentType: 'application/json',
-                data: JSON.stringify({ TimeZoneId: updatedTimeZone, IsActive: isActive }),
+                data: JSON.stringify({ 
+                    TimeZoneId: updatedTimeZone, 
+                    IsActive: isActive,
+                    AnalyzeDescriptionsWithCv: analyzeWithCv
+                }),
                 success: function (schedule) {
                     document.getElementById("schedule-region").innerText = schedule.timeZoneId;
                     document.getElementById("schedule-status").innerText = schedule.isActive ? "Active" : "Inactive";
+                    addToast({ message: 'Updated schedule correctly ', type: 'success'})   
                 },
                 error: function (xhr) {
+                    console.log(xhr)
                     addToast({ message: 'Error updating schedule: ' + xhr.responseJSON?.error || xhr.statusText })       
                 }
             });

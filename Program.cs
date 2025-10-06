@@ -19,6 +19,7 @@ using Amazon.Runtime;
 using OpenAI.Chat;
 using JobSearcher.AiAnalyzer;
 using JobSearch.Emails;
+using JobSearch.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +77,8 @@ builder.Services.AddSingleton<IEmailService, SmtpEmailService>();
 
 builder.Services.AddScoped<ICvStorageService, CvStorageService>();
 builder.Services.AddScoped<IUserCvStorageService, UserCvStorage>();
+builder.Services.AddScoped<ICvUtils, CvUtils>();
+
 builder.Services.AddScoped<IUserFetchedLinkRepository, UserFetchedLinkRepository>();
 builder.Services.AddScoped<IJobOpeningSearcher, JobOpeningSearcher>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();

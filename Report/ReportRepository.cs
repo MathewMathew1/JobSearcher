@@ -66,7 +66,8 @@ namespace JobSearcher.Report
             {
                 UserId = userId,
                 TimeZoneId = userReportScheduleCreateDto.TimeZoneId,
-                IsActive = userReportScheduleCreateDto.IsActive
+                IsActive = userReportScheduleCreateDto.IsActive,
+                AnalyzeDescriptionsWithCv = userReportScheduleCreateDto.AnalyzeDescriptionsWithCv
             };
 
             _appDbContext.UserReportSchedules.Add(schedule);
@@ -88,6 +89,7 @@ namespace JobSearcher.Report
 
             schedule.TimeZoneId = userReportScheduleCreateDto.TimeZoneId;
             schedule.IsActive = userReportScheduleCreateDto.IsActive;
+            schedule.AnalyzeDescriptionsWithCv = userReportScheduleCreateDto.AnalyzeDescriptionsWithCv;
 
 
             _appDbContext.UserReportSchedules.Update(schedule);

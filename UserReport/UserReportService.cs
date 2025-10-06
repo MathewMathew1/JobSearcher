@@ -27,7 +27,7 @@ namespace JobSearcher.UserReport
                 UserId = userId,
                 DataJson = allJobsJson,
                 CreatedAt = DateTime.UtcNow,
-                SeenByUser = false
+                SeenByUser = false,
             };
 
             await _dbContext.UserReports.AddAsync(report);
@@ -53,14 +53,13 @@ namespace JobSearcher.UserReport
 
             if (report == null)
             {
-                _logger.LogWarning("Report {ReportId} not found for user {UserId}", reportId, userId);
                 return;
             }
 
             report.SeenByUser = true;
             await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("Report {ReportId} marked as seen by user {UserId}", reportId, userId);
         }
+
 
         public async Task<List<(UserReportModel Report, ConcurrentDictionary<Site, List<JobInfo>> Data)>>
     GetUserReportsAsync(int userId, bool? seenByUser = null)

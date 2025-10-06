@@ -10,6 +10,7 @@ namespace JobSearcher.Job
         public required string Description { get; set; }
         public string? ImageLink { get; set; }
         public string ExtensiveDescription { get; set; } = string.Empty;
+        public float? MatchToUserCv { get; set; } 
     }
 
     public class JobSearchModel

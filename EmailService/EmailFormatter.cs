@@ -23,9 +23,11 @@ namespace JobSearch.Emails
             sb.AppendLine(".job-link a { color: #1a73e8; text-decoration: none; }");
             sb.AppendLine(".job-link a:hover { text-decoration: underline; }");
             sb.AppendLine(".job-desc { font-size: 14px; color: #444; }");
+            sb.AppendLine(".match-bar { width: 100%; height: 10px; border-radius: 4px; margin-top: 6px; }");
+            sb.AppendLine(".match-text { font-size: 13px; font-weight: 500; margin-top: 4px; }");
             sb.AppendLine("</style></head><body>");
 
-            sb.AppendLine($"<div class='header'>Job Reports</div>");
+            sb.AppendLine("<div class='header'>Job Reports</div>");
 
             foreach (var siteEntry in resultsBySite)
             {
@@ -46,6 +48,22 @@ namespace JobSearch.Emails
                     sb.AppendLine($"<div class='job-link'><a href='{job.Link}' target='_blank'>View job</a></div>");
                     if (!string.IsNullOrWhiteSpace(job.Description))
                         sb.AppendLine($"<div class='job-desc'>{Escape(Truncate(job.Description, 250))}</div>");
+
+                    if (job.MatchToUserCv.HasValue)
+                    {
+                        var match = Math.Clamp(job.MatchToUserCv.Value, 0f, 1f);
+                        var r = (int)(255 * (1 - match));
+                        var g = (int)(200 * match);
+                        var color = $"rgb({r},{g},80)";
+                        string text;
+                        if (match >= 0.7f) text = "Excellent match";
+                        else if (match >= 0.4f) text = "Fair match";
+                        else text = "Low match";
+
+                        sb.AppendLine($"<div class='match-bar' style='background: {color}; opacity:0.8;'></div>");
+                        sb.AppendLine($"<div class='match-text'>Match to your CV: {(match * 100):F0}% ({text})</div>");
+                    }
+
                     sb.AppendLine("</div>");
                 }
 
@@ -55,6 +73,7 @@ namespace JobSearch.Emails
             sb.AppendLine("</body></html>");
             return sb.ToString();
         }
+
 
         public string FormatUserMessage(MessageDto dto)
         {

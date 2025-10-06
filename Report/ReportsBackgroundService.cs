@@ -72,6 +72,7 @@ namespace JobSearcher.Report
                 foreach (var schedule in schedules)
                 {
                     if (stoppingToken.IsCancellationRequested) break;
+                    if (!schedule.IsActive) continue;
 
                     var tz = TimeZoneInfo.FindSystemTimeZoneById(schedule.TimeZoneId);
                     var nowInTz = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
@@ -80,7 +81,7 @@ namespace JobSearcher.Report
                     {
                         if (reportTime.LocalTime.Hours == nowInTz.Hour)
                         {
-                            await generateReportService.GenerateReportForUser(schedule.UserId);
+                            await generateReportService.GenerateReportForUser(schedule.UserId, schedule.AnalyzeDescriptionsWithCv);
                         }
                     }
                 }
