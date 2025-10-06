@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using JobSearcher.UserReport;
 using JobSearcher.Account;
 using JobSearcher.Api.MiddleWare;
+using JobSearcher.ViewModels;
+
 
 namespace UserJobSearcher.Controllers
 {
-    public class UserDataWithReports {
-
-    }
 
     [Route("[controller]")]
     public class UserReportController : Controller
@@ -28,13 +27,19 @@ namespace UserJobSearcher.Controllers
         {
             var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
             if (user == null)
-            {
                 return RedirectToAction("Index", "Login");
-            }
 
             var reports = await _reportRepository.GetUserReportsAsync(user.Id);
-            return View(reports);
+
+            var vm = new UserReportsViewModel
+            {
+                User = user,
+                Reports = reports
+            };
+
+            return View(vm);
         }
+
 
         [Authorize]
         [HttpPost("MarkSeen")]

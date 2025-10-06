@@ -1,8 +1,9 @@
 @using JobSearcher.Job
 @using JobSearcher.JobOpening
 @using JobSearcher.UserReport
+@using JobSearcher.ViewModels
 @using System.Collections.Concurrent
-@model List<(UserReportModel Report, ConcurrentDictionary<Site, List<JobInfo>> Data)>
+@model UserReportsViewModel
 
 @{
     ViewData["Title"] = "User Reports";
@@ -14,7 +15,7 @@
         <p class="text-muted fs-5">View your latest job search summaries from multiple platforms.</p>
     </div>
 
-    @if (Model == null || !Model.Any())
+    @if (Model == null || !Model.Reports.Any())
     {
         <div class="alert alert-info text-center shadow-sm">
             No reports available yet. Reports are generated automatically at your scheduled time.
@@ -23,10 +24,10 @@
     else
     {
         <div class="accordion report-container" id="reportsAccordion">
-            @for (int r = 0; r < Model.Count; r++)
+            @for (int r = 0; r < Model.Reports.Count; r++)
             {
-                var report = Model[r].Report;
-                var data = Model[r].Data;
+                var report = Model.Reports[r].Report;
+                var data = Model.Reports[r].Data;
                 var isNew = !report.SeenByUser;
                 var collapseId = $"collapse-{report.Id}";
                 var headingId = $"heading-{report.Id}";
@@ -97,15 +98,21 @@
                                                         <ul class="list-group list-group-flush">
                                                             @foreach (var job in jobs)
                                                             {
-                                                                <li class="list-group-item">
-                                                                    <a href="@job.Link" target="_blank" class="fw-semibold text-decoration-none text-primary">
-                                                                        @job.Name
-                                                                    </a>
-                                                                    <div class="small text-muted mt-1">
-                                                                        @job.Description
+                                                                <li class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
+                                                                    <div>
+                                                                        <a href="@job.Link" target="_blank" class="fw-semibold text-decoration-none text-primary">
+                                                                            @job.Name
+                                                                        </a>
+                                                                        <div class="small text-muted mt-1">@job.Description</div>
                                                                     </div>
+                                                                    <button class="btn btn-outline-primary btn-sm analyze-btn mt-2 mt-md-0"
+                                                                            data-jobname="@job.Name"
+                                                                            data-jobdesc="@Html.Raw(job.Description?.Replace("\"", "&quot;"))"
+                                                                            data-bs-toggle="modal" data-bs-target="#analyzeModal">
+                                                                        Analyze
+                                                                    </button>
                                                                 </li>
-                                                            }
+                                                                                                                            }
                                                         </ul>
                                                     }
                                                 </div>
@@ -122,6 +129,8 @@
     }
 </div>
 
+@await Html.PartialAsync("JobAnalyzeModal/_JobAnalyzeModal", Model.User)
+
 <style>
 .text-gradient {
     background: linear-gradient(90deg, #0d6efd, #6610f2);
@@ -136,34 +145,30 @@
 .unseen-report {
     border-left: 5px solid #dc3545;
 }
+
+
 </style>
 
 @section Scripts {
-
-
-<script>
-    $(document).on('show.bs.collapse', '.accordion-collapse', function () {
-  
-        var button = $(this).prev().find('.accordion-button.unseen-report');
-
-        if (button.length) {
-    
-            var reportId = button.data('report-id');
-            $.ajax({
-                url: '/UserReport/MarkSeen',
-                method: 'POST',
-                data: { id: reportId },
-                success: function () {
-                    button.removeClass('unseen-report');
-
-                },
-                error(e){
-                    console.error("Error marking report as seen:", e);
-                }
-            });
-        }
-    });
-</script>
-
+    <script>
+        $(document).on('show.bs.collapse', '.accordion-collapse', function () {
+            var button = $(this).prev().find('.accordion-button.unseen-report');
+            if (button.length) {
+                var reportId = button.data('report-id');
+                $.ajax({
+                    url: '/UserReport/MarkSeen',
+                    method: 'POST',
+                    data: { id: reportId },
+                    success: function () {
+                        button.removeClass('unseen-report');
+                    },
+                    error: function (e) {
+                        console.error("Error marking report as seen:", e);
+                    }
+                });
+            }
+        });
+    </script>
 }
+
 
