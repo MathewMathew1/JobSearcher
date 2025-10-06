@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using JobSearcher.UserReport;
 using JobSearcher.Account;
+using JobSearcher.Api.MiddleWare;
 
 namespace UserJobSearcher.Controllers
 {
@@ -31,11 +32,12 @@ namespace UserJobSearcher.Controllers
             return View(reports);
         }
 
+        [Authorize]
         [HttpPost("MarkSeen")]
         public async Task<IActionResult> MarkSeen(int id)
         {
             var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-            await _reportRepository.MarkReportAsSeen(id, user.Id);
+            await _reportRepository.MarkReportAsSeen(id, user!.Id);
 
             return Ok();
         }
