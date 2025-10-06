@@ -29,21 +29,28 @@ namespace JobSearcher.AiAnalyzer
 
         public async Task<float> AnalyzeCvAsync(string cvText, string jobDescription)
         {
-            var similarities = await GetSimilarityAsync(cvText, jobDescription);
+            var similarities = await GetSimilarityAsync(cvText, new List<string> { jobDescription } );
 
             var score = similarities.First();
 
             return score;
         }
 
-        private async Task<float[]> GetSimilarityAsync(string cv, string jobDescription)
+        public async Task<float[]> AnalyzeJobDescriptionsAsync(string cvText, List<string> jobDescriptions)
+        {
+            var similarities = await GetSimilarityAsync(cvText, jobDescriptions);
+
+            return similarities;
+        }
+
+        private async Task<float[]> GetSimilarityAsync(string checkedObject, List<string> comparedObjects)
         {
             var requestData = JsonConvert.SerializeObject(new
             {
                 inputs = new
                 {
-                    source_sentence = jobDescription,
-                    sentences = new string[] { cv }
+                    source_sentence = checkedObject,
+                    sentences = comparedObjects.ToArray()
                 }
             });
             try
