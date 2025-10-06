@@ -95,7 +95,6 @@
 @section Scripts {
     <script>
         $(function () {
-            // Upload or update CV
             $('#cvUploadForm').on('submit', function (e) {
                 e.preventDefault();
 
@@ -155,7 +154,6 @@
                     .done(function () {
                         $('#uploadAlert').removeClass('d-none').addClass('alert-success').text('CV deleted successfully.');
 
-                        // Replace with "No CV" message
                         $('#currentCvList').html('<div class="list-group-item text-muted">No CV uploaded yet.</div>');
                     })
                     .fail(function (xhr) {

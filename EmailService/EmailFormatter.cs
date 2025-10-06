@@ -1,6 +1,7 @@
 using System.Text;
 using JobSearcher.JobOpening;
 using JobSearcher.Job;
+using JobSearcher.Controllers;
 
 namespace JobSearch.Emails
 {
@@ -54,6 +55,34 @@ namespace JobSearch.Emails
             sb.AppendLine("</body></html>");
             return sb.ToString();
         }
+
+        public string FormatUserMessage(MessageDto dto)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("<!DOCTYPE html>");
+            sb.AppendLine("<html><head><meta charset='UTF-8'><title>User Feedback</title>");
+            sb.AppendLine("<style>");
+            sb.AppendLine("body { font-family: Arial, sans-serif; color: #333; background: #fafafa; padding: 20px; }");
+            sb.AppendLine(".header { background: #004080; color: white; padding: 12px 20px; font-size: 20px; border-radius: 6px; }");
+            sb.AppendLine(".section { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 20px; }");
+            sb.AppendLine(".label { font-weight: bold; color: #004080; }");
+            sb.AppendLine("</style></head><body>");
+
+            sb.AppendLine("<div class='header'>New User Message</div>");
+            sb.AppendLine("<div class='section'>");
+            sb.AppendLine($"<p><span class='label'>From:</span> {Escape(dto.Email)}</p>");
+            if (!string.IsNullOrWhiteSpace(dto.Subject))
+                sb.AppendLine($"<p><span class='label'>Subject:</span> {Escape(dto.Subject)}</p>");
+            sb.AppendLine("<hr>");
+            sb.AppendLine($"<p>{Escape(dto.Message)}</p>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("</body></html>");
+
+            return sb.ToString();
+        }
+
+
 
         private static string Escape(string text)
         {
