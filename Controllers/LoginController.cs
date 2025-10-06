@@ -77,12 +77,13 @@ namespace JobSearcher.Controllers
                     HttpContext.Items["CurrentUser"] = userInDb;
                 }
 
+                var oneYearOfMinutes = 60 * 24 * 365;
                 Response.Cookies.Append("jwt_token", jwtToken, new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.Lax,
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(60)
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(oneYearOfMinutes)
                 });
 
 
