@@ -43,7 +43,7 @@ body {
 
 .job-item {
   background-color: #f8f9fa; /* light gray */
-  transition: transform 0.2s, box-shadow 0.2s;
+
 }
 
 .job-item:hover {
