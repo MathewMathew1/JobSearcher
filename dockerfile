@@ -50,6 +50,8 @@ RUN apt-get update && \
         --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
+
 ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "xvfb-run -a dotnet JobSearcher.dll"]

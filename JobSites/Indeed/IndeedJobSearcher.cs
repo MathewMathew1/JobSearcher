@@ -26,7 +26,7 @@ namespace JobSearcher.Job
 
             while (totalCollected < maxAmount)
             {
-                // Get all cards currently rendered
+            
                 var jobCards = await page.QuerySelectorAllAsync("div.job_seen_beacon");
                 if (jobCards.Count == 0)
                 {
@@ -45,7 +45,7 @@ namespace JobSearcher.Job
 
                     var descElement = await page.WaitForSelectorAsync(
                         "div#jobDescriptionText",
-                        new PageWaitForSelectorOptions { Timeout = 10000 }
+                        new PageWaitForSelectorOptions { Timeout = 4000 }
                     );
 
                     string description = string.Empty;

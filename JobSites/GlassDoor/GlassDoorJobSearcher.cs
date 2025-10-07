@@ -90,7 +90,7 @@ namespace JobSearcher.Job
                         await jobPage.GotoAsync(jobUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
                         var descElement = await jobPage.WaitForSelectorAsync(
                             "div.JobDetails_jobDescription__uW_fK",
-                            new PageWaitForSelectorOptions { Timeout = 15000 }
+                            new PageWaitForSelectorOptions { Timeout = 4000 }
                         );
                         if (descElement != null)
                             extensiveDescription = await descElement.InnerTextAsync();
