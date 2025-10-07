@@ -1,0 +1,61 @@
+# Ignore git files
+.git/
+.gitignore
+
+# IDE and editor settings
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+*.user
+*.suo
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Rr]elease/
+[Dd]ebug/
+artifacts/
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Dependency caches
+packages/
+node_modules/
+npm-debug.log
+
+# Environment and secrets
+secrets.json
+appsettings.Development.json
+appsettings.Local.json
+
+# Test output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Docker-related intermediates
+docker-compose.override.yml
+*.mdf
+*.ldf
+
+# Misc temporary files
+*.tmp
+*.temp
+*.bak
+
+# Local database
+*.db
+*.sqlite
+*.sqlite3
+app.db

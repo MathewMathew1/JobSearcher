@@ -70,4 +70,6 @@ _TeamCity*
 .obj
 .bin
 
+.env
+
 .app.db

@@ -16,17 +16,18 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Amazon.Runtime;
-using OpenAI.Chat;
 using JobSearcher.AiAnalyzer;
 using JobSearch.Emails;
 using JobSearch.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddAuthentication(options =>
@@ -96,6 +97,15 @@ builder.Services.AddHostedService<ReportSetupBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+}
 
 if (!app.Environment.IsDevelopment())
 {

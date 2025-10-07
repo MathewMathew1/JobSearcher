@@ -26,10 +26,9 @@ public class ReportSchedulerViewComponent : ViewComponent
         try
         {
             var user = await UserHelper.GetCurrentUserAsync(_http.HttpContext!, _account);
-            if (user == null)
-                return Content("User not logged in");
 
-            var schedule = await _reportRepository.GetScheduleAsync(user.Id);
+
+            var schedule = await _reportRepository.GetScheduleAsync(user!.Id);
        
             return View(schedule); 
         }

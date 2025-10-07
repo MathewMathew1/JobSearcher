@@ -22,29 +22,33 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <p class="mb-1 fw-semibold"><i class="bi bi-globe"></i> Time Zone:</p>
-                        <p class="text-muted" id="schedule-region">@Model.TimeZoneId</p>
+                        <p class="text-muted" id="schedule-region">@Model?.TimeZoneId</p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-1 fw-semibold"><i class="bi bi-lightning-charge"></i> Status:</p>
-                        <p class="@(Model.IsActive ? "text-success" : "text-danger") fw-semibold" id="schedule-status">
-                            @(Model.IsActive ? "Active" : "Inactive")
+                        <p class="@(Model?.IsActive == true ? "text-success" : "text-danger") fw-semibold" id="schedule-status">
+                            @(Model?.IsActive == true ? "Active" : "Inactive")
                         </p>
                     </div>
                 </div>
 
                 <h5 class="fw-bold mb-2">Scheduled Report Times</h5>
                 <ul class="list-group mb-4 shadow-sm rounded-3">
-                    @foreach (var time in Model.ReportTimes)
+                    @if (Model != null && Model.ReportTimes.Any())
                     {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="fw-semibold">@time.LocalTime.ToString(@"hh\:mm")</span>
-                            <i class="bi bi-clock text-primary"></i>
-                        </li>
+                        foreach (var time in Model.ReportTimes)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold">@time.LocalTime.ToString(@"hh\:mm")</span>
+                                <i class="bi bi-clock text-primary"></i>
+                            </li>
+                        }
                     }
-                    @if (!Model.ReportTimes.Any())
+                    else
                     {
                         <li class="list-group-item text-muted text-center">No report times set.</li>
                     }
+
                 </ul>
 
                 <div class="card border-0 shadow-sm rounded-3 mt-3">
@@ -74,8 +78,12 @@
                         </div>
                     </div>
                 </div>
-
-                @await Html.PartialAsync("HourPicker/_HourPicker", Model.ReportTimes)
+                
+                @if(Model != null){
+                    @await Html.PartialAsync("HourPicker/_HourPicker", Model.ReportTimes)
+                }
+                    
+               
             </div>
         </div>
 
@@ -190,9 +198,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify({ timeZoneId: timeZone, isActive: isActive }),
                 success: function (schedule) {
-                    $form.closest("#card-schedule").removeClass("d-none")
-                    $form.closest(".no-report-schedule").addClass("d-none")
-                    $form.remove();
+                     location.reload();
                 },
                 error: function (xhr) {
                     addToast({ message: 'Error creating schedule: ' + xhr.responseJSON?.error || xhr.statusText, type: "error" })    
