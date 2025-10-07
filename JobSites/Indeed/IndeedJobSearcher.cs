@@ -14,7 +14,8 @@ namespace JobSearcher.Job
             using var playwright = await Playwright.CreateAsync();
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = false
+                Headless = false,
+                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }
             });
 
             var page = await browser.NewPageAsync();
@@ -26,7 +27,7 @@ namespace JobSearcher.Job
 
             while (totalCollected < maxAmount)
             {
-            
+
                 var jobCards = await page.QuerySelectorAllAsync("div.job_seen_beacon");
                 if (jobCards.Count == 0)
                 {
