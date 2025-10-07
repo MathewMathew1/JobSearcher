@@ -139,7 +139,7 @@
         const timezones = Intl.supportedValuesOf('timeZone')
         const tzSelect = document.getElementById("TimeZoneId");
         const tzSelectUpdate = document.getElementById("TimeZoneIdUpdate");
-        console.log(browserTz)
+
         timezones.forEach(tz => {
             const opt = document.createElement("option");
             opt.value = tz;
