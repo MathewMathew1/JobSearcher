@@ -12,10 +12,13 @@ namespace JobSearcher.Report
 
             try
             {
-                var windowsId = TZConvert.IanaToWindows(tzId);
-                var validWindowsIds = TimeZoneInfo.GetSystemTimeZones().Select(tz => tz.Id);
-                if (!validWindowsIds.Contains(windowsId))
-                    return new ValidationResult($"Invalid time zone: {tzId}");
+                var systemTzIds = TimeZoneInfo.GetSystemTimeZones().Select(tz => tz.Id);
+                if (!systemTzIds.Contains(tzId))
+                {
+                    var windowsId = TZConvert.IanaToWindows(tzId);
+                    if (!TimeZoneInfo.GetSystemTimeZones().Any(tz => tz.Id == windowsId))
+                        return new ValidationResult($"Invalid time zone: {tzId}");
+                }
             }
             catch
             {
@@ -24,5 +27,6 @@ namespace JobSearcher.Report
 
             return ValidationResult.Success;
         }
+
     }
 }
