@@ -44,9 +44,10 @@ namespace JobSearcher.Report
             }
         }
 
-        private async Task CreateReportSetupsAsync(IReportRepository reportRepository,
-                                                    IGenerateReportService generateReportService,
-                                                    CancellationToken stoppingToken)
+        private async Task CreateReportSetupsAsync(
+    IReportRepository reportRepository,
+    IGenerateReportService generateReportService,
+    CancellationToken stoppingToken)
         {
             _currentLowerBound = 1;
             var totalSchedules = await reportRepository.GetHighestScheduleIdAsync() ?? 1;
@@ -68,24 +69,38 @@ namespace JobSearcher.Report
                         _currentLowerBound = 0;
                 }
 
-                var schedules = await reportRepository.GetSchedulesBetweenIds(lowerBound, upperBound);
+                using var chunkScope = _services.CreateScope();
+                var scopedReportRepo = chunkScope.ServiceProvider.GetRequiredService<IReportRepository>();
+
+                var schedules = await scopedReportRepo.GetSchedulesBetweenIds(lowerBound, upperBound);
+
                 foreach (var schedule in schedules)
                 {
-                    if (stoppingToken.IsCancellationRequested) break;
-                    if (!schedule.IsActive) continue;
+                    if (stoppingToken.IsCancellationRequested)
+                        break;
+                    if (!schedule.IsActive)
+                        continue;
 
+                   
                     var tz = TimeZoneInfo.FindSystemTimeZoneById(schedule.TimeZoneId);
                     var nowInTz = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
-                   
+
                     foreach (var reportTime in schedule.ReportTimes)
                     {
-                        if (reportTime.LocalTime.Hours == nowInTz.Hour)
-                        {
-                            await generateReportService.GenerateReportForUser(schedule.UserId, schedule.AnalyzeDescriptionsWithCv);
-                        }
+                        if (reportTime.LocalTime.Hours != nowInTz.Hour)
+                            continue;
+
+                        using var userScope = _services.CreateScope();
+                        var scopedGenerateReportService = userScope.ServiceProvider.GetRequiredService<IGenerateReportService>();
+                     
+                        await scopedGenerateReportService.GenerateReportForUser(
+                            schedule.UserId,
+                            schedule.AnalyzeDescriptionsWithCv
+                        );
                     }
                 }
             }
         }
+
     }
 }

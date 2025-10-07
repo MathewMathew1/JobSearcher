@@ -47,23 +47,17 @@ namespace JobSearcher.Report
         public async Task GenerateReportForUser(int userId, bool analyzeMatch)
         {
 
-            var userDataTask = _accountService.GetEmailAndCvByUserId(userId);
+            var userData = await _accountService.GetEmailAndCvByUserId(userId);
+            string? cvContent = null;
+            if (userData.Value.UserCv != null)
+                cvContent = await _cvUtils.GetContentOfCvByUserIdAsync(userData.Value.UserCv);
 
-            var cvContentTask = userDataTask.ContinueWith(async t =>
-            {
-                var userData = t.Result.Value;
-                if (userData.UserCv == null)
-                {
-                    return (string?)null;
-                }
-
-                return await _cvUtils.GetContentOfCvByUserIdAsync(userData.UserCv);
-            }).Unwrap();
 
             var searches = await _jobOpeningSearcher.GetSearchesByUser(userId);
-            var resultsBySite = new ConcurrentDictionary<Site, List<JobInfo>>();
             var searchedLinks = await _userFetchedLinkRepository.GetAllLinksAsync(userId);
 
+
+            var resultsBySite = new ConcurrentDictionary<Site, List<JobInfo>>();
             var searchedLink = new SearchedLink
             {
                 SearchedInDatabase = searchedLinks,
@@ -73,75 +67,36 @@ namespace JobSearcher.Report
             foreach (var search in searches.Where(s => s.IsActive))
             {
                 if (!_searcherAdapters.TryGetValue(search.Site, out var service))
-                {
-                    _logger.LogWarning("No search service registered for site {Site}", search.Site);
                     continue;
-                }
 
                 var jobs = await service.GetJobOfferings(search, searchedLink);
-
-                resultsBySite.AddOrUpdate(
-                    search.Site,
-                    jobs,
-                    (_, existing) =>
-                    {
-                        existing.AddRange(jobs);
-                        return existing;
-                    });
+                resultsBySite.AddOrUpdate(search.Site, jobs, (_, existing) =>
+                {
+                    existing.AddRange(jobs);
+                    return existing;
+                });
             }
 
-            var userData = await userDataTask;
-            _ = _userFetchedLinkRepository.SaveLinksAsync(userId, searchedLink.NewLinks);
+            await _userFetchedLinkRepository.SaveLinksAsync(userId, searchedLink.NewLinks);
 
-            string? cvContent = null;
-            if (userData.Value.UserCv != null && analyzeMatch)
+            if (cvContent != null && analyzeMatch)
             {
-                cvContent = await cvContentTask;
-            }
-
-
-
-
-            Task<float[]>? matchResultsTask = null;
-
-            if (cvContent != null)
-            {
-                var allJobs = resultsBySite
-                    .SelectMany(kv => kv.Value)
-                    .ToList();
-
-                matchResultsTask = _jobAnalyzeService.AnalyzeJobDescriptionsAsync(
+                var allJobs = resultsBySite.SelectMany(kv => kv.Value).ToList();
+                var matchResults = await _jobAnalyzeService.AnalyzeJobDescriptionsAsync(
                     cvContent,
                     allJobs.Select(j => j.Description).ToList()
                 );
-            }
-
-            float[]? matchResults = null;
-            if (matchResultsTask != null)
-            {
-                matchResults = await matchResultsTask;
                 int i = 0;
-                foreach (var job in resultsBySite.SelectMany(kv => kv.Value))
-                {
-                    if (i < matchResults.Length)
-                        job.MatchToUserCv = matchResults[i];
-                    i++;
-                }
+                foreach (var job in allJobs)
+                    job.MatchToUserCv = i < matchResults.Length ? matchResults[i++] : 0;
             }
 
             var htmlBody = _emailReportFormatter.FormatReport(resultsBySite, userId);
-
-            _ = _emailService.SendEmailAsync(
-                userData.Value.Email,
-                "Your Daily Job Report",
-                htmlBody,
-                "Please open the email in HTML-capable client."
-            );
-
+            await _emailService.SendEmailAsync(userData.Value.Email, "Your Daily Job Report", htmlBody,
+                "Please open the email in HTML-capable client.");
             await _userReportService.AddUserReport(resultsBySite, userId);
-
-            _logger.LogInformation("Generated report for user {UserId}, {Sites} sites processed", userId, resultsBySite.Count);
         }
+
 
     }
 }
