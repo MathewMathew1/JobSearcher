@@ -50,7 +50,7 @@ namespace JobSearcher.Job
 
                     var titleHandle = await jobNode.QuerySelectorAsync("a[data-test='job-title']");
                     var link = await titleHandle?.GetAttributeAsync("href");
-                    
+
                     var title = titleHandle != null ? await titleHandle.InnerTextAsync() : "Unknown";
 
                     if (string.IsNullOrEmpty(link))
@@ -89,9 +89,10 @@ namespace JobSearcher.Job
 
                         await jobPage.GotoAsync(jobUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
                         var descElement = await jobPage.WaitForSelectorAsync(
-                            "div.JobDetails_jobDescription__uW_fK",
-                            new PageWaitForSelectorOptions { Timeout = 4000 }
+                            "div[data-brandviews*='jobview-description'] div[data-brandviews*='jobview-page']",
+                            new PageWaitForSelectorOptions { Timeout = 6000 }
                         );
+
                         if (descElement != null)
                             extensiveDescription = await descElement.InnerTextAsync();
 
