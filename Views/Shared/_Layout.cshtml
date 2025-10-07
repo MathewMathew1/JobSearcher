@@ -19,12 +19,30 @@
     </header>
     <div id="toasts-container" style="position: fixed; bottom: 10px; right: 0px; z-index: 9999;"></div>
     <div class="container">
-        
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    <footer class="bg-light text-center text-lg-start mt-5 border-top">
+        <div class="container py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start text-center mb-2 mb-md-0">
+                    <span class="text-muted small">&copy; @DateTime.Now.Year JobSearcher. All rights reserved.</span>
+                </div>
+                <div class="col-md-6 text-md-end text-center">
+                    <span class="small text-muted">
+                        Icon by
+                        <a href="https://www.flaticon.com/free-icons/www" title="www icons"
+                            class="text-decoration-none text-primary" target="_blank" rel="noopener">
+                            Freepik - Flaticon
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
