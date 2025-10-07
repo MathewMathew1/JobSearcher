@@ -139,12 +139,12 @@
         const timezones = Intl.supportedValuesOf('timeZone')
         const tzSelect = document.getElementById("TimeZoneId");
         const tzSelectUpdate = document.getElementById("TimeZoneIdUpdate");
-
+        console.log(browserTz)
         timezones.forEach(tz => {
             const opt = document.createElement("option");
             opt.value = tz;
             opt.text = tz;
-            if (tz === browserTz) opt.selected = true;
+
             const secondOpt = opt.cloneNode(true)
    
             if(tzSelect){
@@ -156,6 +156,8 @@
             
             
         });
+        if (tzSelect) tzSelect.value = browserTz;
+        if (tzSelectUpdate) tzSelectUpdate.value = browserTz;
 
         document.getElementById("update-schedule-btn").addEventListener("click", function () {
             const updatedTimeZone = tzSelectUpdate.value;
