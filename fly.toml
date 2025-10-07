@@ -7,6 +7,9 @@ app = 'jobsearcher'
 primary_region = 'ams'
 
 [build]
+  dockerfile = "./Dockerfile"
+
+
 
 [http_service]
   internal_port = 8080
