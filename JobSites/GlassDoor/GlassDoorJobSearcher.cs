@@ -1,8 +1,7 @@
 using Microsoft.Playwright;
-using HtmlAgilityPack;
 using JobSearch.Utils;
-using System.Text.Json;
-using System.Text.RegularExpressions;
+using JobSearch.ProxyService;
+using JobSearch.Sanitizer;
 
 namespace JobSearcher.Job
 {
@@ -10,10 +9,14 @@ namespace JobSearcher.Job
     {
         private readonly object _lock = new();
         private readonly ILogger<GlassDoorJobSearcher> _logger;
+        private readonly IProxyService _proxyService;
+        private readonly ISanitizerService _sanitizeService;
 
-        public GlassDoorJobSearcher(ILogger<GlassDoorJobSearcher> logger)
+        public GlassDoorJobSearcher(ILogger<GlassDoorJobSearcher> logger, IProxyService proxyService, ISanitizerService sanitizerService)
         {
             _logger = logger;
+            _proxyService = proxyService;
+            _sanitizeService = sanitizerService;
         }
 
         public async Task<List<JobInfo>> GetJobOfferings(GlassDoorSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
@@ -23,12 +26,15 @@ namespace JobSearcher.Job
             using var playwright = await Playwright.CreateAsync();
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = false
-            });
+                Headless = false,
+                Args = new[] { "--ignore-certificate-errors", "--disable-blink-features=AutomationControlled" }
 
-            var page = await browser.NewPageAsync();
+            });
+            var proxy = _proxyService.GetContextOptions();
+            var context = await browser.NewContextAsync(_proxyService.GetContextOptions());
+            var page = await context.NewPageAsync();
             var url = $"https://www.glassdoor.com/Job/{search.Location}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,16.htm?sortBy=date_desc";
-            await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
+            await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
             int totalCollected = 0;
 
@@ -83,13 +89,13 @@ namespace JobSearcher.Job
                     var img = await jobNode.QuerySelectorAsync("img.avatar-base_Image") is IElementHandle i ? await i.GetAttributeAsync("src") : null;
 
 
-                    //var (extDesc, imgLink) = await TryExpandAndExtractDescriptionAsync(page, titleHandle);
+                    var extensiveDescription = await TryExpandAndExtractDescriptionAsync(page, jobNode);
                     jobs.Add(new JobInfo
                     {
                         Name = title,
                         Link = normalizeLink,
                         Description = $"{employer} | {location} | {salary}",
-                        ExtensiveDescription = "",
+                        ExtensiveDescription = _sanitizeService.SanitizeHtmlDocument(extensiveDescription),
                         ImageLink = img
                     });
 
@@ -109,64 +115,126 @@ namespace JobSearcher.Job
             return jobs;
         }
 
-        private async Task<(string ExtensiveDescription, string? ImageLink)> TryExpandAndExtractDescriptionAsync(
-            IPage page,
-            IElementHandle jobElement)
+        private async Task<string> TryExpandAndExtractDescriptionAsync(IPage page, IElementHandle jobElement)
         {
             try
             {
-                // Click the job card safely
-                await jobElement.ScrollIntoViewIfNeededAsync();
+                 await DealWithModal(page);
+                await HumanScrollToElementAsync(page, jobElement);
+                await HumanMoveAndClickAsync(page, jobElement);
 
-                var delayBeforeClick = Random.Shared.Next(250, 750);
-                await page.WaitForTimeoutAsync(delayBeforeClick);
-
-                await jobElement.ClickAsync(new ElementHandleClickOptions
-                {
-                    Timeout = 8000
-                });
-
-                // Wait for the job description section to appear
+                await DealWithModal(page);
                 var section = await page.WaitForSelectorAsync(
                     "section.Section_sectionComponent__nRsB2 div.JobDetails_jobDescription__uW_fK",
                     new PageWaitForSelectorOptions
                     {
-                        Timeout = 10000,
+                        Timeout = 15000,
                         State = WaitForSelectorState.Attached
                     });
 
-                if (section == null)
-                    return (string.Empty, null);
+                if (section == null) return string.Empty;
 
-                // Wait a bit for React hydration
-                await page.WaitForTimeoutAsync(Random.Shared.Next(300, 900));
+                await page.WaitForTimeoutAsync(Random.Shared.Next(500, 1200)); 
 
-                var html = await section.InnerHTMLAsync();
-
-                // Try to get the logo image
-                var imgEl = await page.QuerySelectorAsync("img[data-test='employer-header-logo']");
-                string? imgSrc = null;
-                if (imgEl != null)
-                    imgSrc = await imgEl.GetAttributeAsync("src");
-
-                return (html, imgSrc);
+                return await section.InnerHTMLAsync();
             }
             catch (TimeoutException)
             {
-                Console.WriteLine("Timeout: job description section did not appear in time.");
-                return (string.Empty, null);
+                _logger.LogError("Timeout: job description section did not appear in time.");
+                return string.Empty;
             }
             catch (PlaywrightException ex)
             {
-                Console.WriteLine($"Playwright error while expanding job: {ex.Message}");
-                return (string.Empty, null);
+                _logger.LogError($"Playwright error while expanding job: {ex.Message}");
+                return string.Empty;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error while expanding job: {ex.Message}");
-                return (string.Empty, null);
+                _logger.LogError($"Unexpected error while expanding job: {ex.Message}");
+                return string.Empty;
             }
         }
+
+        private async Task DealWithModal(IPage page)
+        {
+            var modal = await page.QuerySelectorAsync("div[data-test='authModalContainerV2-content']");
+            if (modal != null)
+            {
+                _logger.LogInformation("Auth modal detected. Attempting to close.");
+
+                var closeButton = await page.QuerySelectorAsync("button.CloseButton");
+                if (closeButton != null)
+                {
+                    try
+                    {
+                        await closeButton.ClickAsync();
+                        await page.WaitForTimeoutAsync(800); // wait for modal animation to finish
+                    }
+                    catch (PlaywrightException)
+                    {
+                        _logger.LogWarning("Close button click failed; removing modal via JS.");
+                        await page.EvaluateAsync(
+                            @"() => {
+                            const modal = document.querySelector('div[data-test=""authModalContainerV2-content""]');
+                            if (modal && modal.closest('dialog')) modal.closest('dialog').remove();
+                        }");
+                    }
+                }
+                else
+                {
+                    // fallback removal if close button not visible
+                    await page.EvaluateAsync(
+                        @"() => {
+                        const modal = document.querySelector('div[data-test=""authModalContainerV2-content""]');
+                        if (modal && modal.closest('dialog')) modal.closest('dialog').remove();
+                    }");
+                }
+            }
+        }
+
+
+        private async Task HumanScrollToElementAsync(IPage page, IElementHandle element)
+        {
+            var box = await element.BoundingBoxAsync();
+            if (box == null) return;
+
+            var viewportHeight = page.ViewportSize?.Height ?? 800;
+            var startY = Random.Shared.Next(0, viewportHeight / 2);
+
+            var steps = Random.Shared.Next(8, 15);
+            for (int i = 0; i <= steps; i++)
+            {
+                var y = startY + (box.Y - startY) * i / steps + Random.Shared.NextDouble() * 5;
+                await page.Mouse.MoveAsync((float)(box.X + box.Width / 2 + Random.Shared.NextDouble() * 3),
+                                           (float)y);
+                await page.WaitForTimeoutAsync(Random.Shared.Next(50, 150));
+            }
+        }
+
+        private async Task HumanMoveAndClickAsync(IPage page, IElementHandle element)
+        {
+            var box = await element.BoundingBoxAsync();
+            if (box == null) return;
+
+            var targetX = box.X + box.Width / 2 + Random.Shared.NextDouble() * 3;
+            var targetY = box.Y + box.Height / 2 + Random.Shared.NextDouble() * 3;
+
+            // Move cursor in steps
+            var steps = Random.Shared.Next(10, 20);
+            var startX = Random.Shared.Next(0, (int)page.ViewportSize!.Width / 2);
+            var startY = Random.Shared.Next(0, (int)page.ViewportSize.Height / 2);
+
+            for (int i = 0; i <= steps; i++)
+            {
+                var x = startX + (targetX - startX) * i / steps + Random.Shared.NextDouble();
+                var y = startY + (targetY - startY) * i / steps + Random.Shared.NextDouble();
+                await page.Mouse.MoveAsync((float)x, (float)y);
+                await page.WaitForTimeoutAsync(Random.Shared.Next(20, 70));
+            }
+
+            await page.Mouse.ClickAsync((float)targetX, (float)targetY);
+        }
+
 
 
 

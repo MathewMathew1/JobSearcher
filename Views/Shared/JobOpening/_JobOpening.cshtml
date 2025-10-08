@@ -23,7 +23,7 @@
                         aria-labelledby="heading-@Model.Job.Link.GetHashCode()"
                         data-bs-parent="#accordion-@Model.Job.Link.GetHashCode()">
                         <div class="accordion-body p-2" style="white-space: pre-wrap; font-size: 0.9rem;">
-                            @Model.Job.ExtensiveDescription
+                            @Html.Raw(Model.Job.ExtensiveDescription)
                         </div>
                     </div>
                 </div>

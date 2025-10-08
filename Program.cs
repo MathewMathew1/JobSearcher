@@ -19,6 +19,8 @@ using Amazon.Runtime;
 using JobSearcher.AiAnalyzer;
 using JobSearch.Emails;
 using JobSearch.Utils;
+using JobSearch.ProxyService;
+using JobSearch.Sanitizer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,9 @@ var awsOptions = new AWSOptions
 
 string openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
 
+
+builder.Services.AddSingleton<IProxyService, BrightDataProxyService>();
+builder.Services.AddSingleton<ISanitizerService, SanitizerService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 
