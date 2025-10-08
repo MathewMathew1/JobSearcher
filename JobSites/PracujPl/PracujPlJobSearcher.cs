@@ -75,16 +75,14 @@ namespace JobSearcher.Job
                     string requirementsText = string.Empty;
                     try
                     {
-                        // Reuse the same page for job details
                         await page.GotoAsync(link, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
                         var requirementsElement = await page.QuerySelectorAsync("section[data-test='section-requirements']");
                         if (requirementsElement != null)
                             requirementsText = await requirementsElement.InnerTextAsync();
 
-                        // Go back to the main search page
                         await page.GoBackAsync();
-                        await page.WaitForTimeoutAsync(500); // small delay to stabilize
+                        await page.WaitForTimeoutAsync(500); 
                     }
                     catch (Exception ex)
                     {

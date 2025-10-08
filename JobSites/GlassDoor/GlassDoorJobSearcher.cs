@@ -1,6 +1,8 @@
 using Microsoft.Playwright;
 using HtmlAgilityPack;
 using JobSearch.Utils;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace JobSearcher.Job
 {
@@ -14,7 +16,6 @@ namespace JobSearcher.Job
             _logger = logger;
         }
 
-
         public async Task<List<JobInfo>> GetJobOfferings(GlassDoorSearchModel search, SearchedLink searchedLinks, int maxAmount = 10)
         {
             var jobs = new List<JobInfo>();
@@ -26,7 +27,7 @@ namespace JobSearcher.Job
             });
 
             var page = await browser.NewPageAsync();
-            var url = $"https://www.glassdoor.com/Job/{search.Location}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,16.htm";
+            var url = $"https://www.glassdoor.com/Job/{search.Location}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,16.htm?sortBy=date_desc";
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
             int totalCollected = 0;
@@ -81,34 +82,14 @@ namespace JobSearcher.Job
                     var salary = await jobNode.QuerySelectorAsync("div[data-test='detailSalary']") is IElementHandle s ? await s.InnerTextAsync() : null;
                     var img = await jobNode.QuerySelectorAsync("img.avatar-base_Image") is IElementHandle i ? await i.GetAttributeAsync("src") : null;
 
-                    string extensiveDescription = string.Empty;
-                    try
-                    {
-                        var jobPage = await browser.NewPageAsync();
-                        var jobUrl = link.StartsWith("http") ? link : "https://www.glassdoor.com" + link;
 
-                        await jobPage.GotoAsync(jobUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
-                        var descElement = await jobPage.WaitForSelectorAsync(
-                            "div[data-brandviews*='jobview-description'] div[data-brandviews*='jobview-page']",
-                            new PageWaitForSelectorOptions { Timeout = 6000 }
-                        );
-
-                        if (descElement != null)
-                            extensiveDescription = await descElement.InnerTextAsync();
-
-                        await jobPage.CloseAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Error retrieving extensive description: {ex.Message}");
-                    }
-
+                    //var (extDesc, imgLink) = await TryExpandAndExtractDescriptionAsync(page, titleHandle);
                     jobs.Add(new JobInfo
                     {
                         Name = title,
                         Link = normalizeLink,
                         Description = $"{employer} | {location} | {salary}",
-                        ExtensiveDescription = extensiveDescription,
+                        ExtensiveDescription = "",
                         ImageLink = img
                     });
 
@@ -128,6 +109,64 @@ namespace JobSearcher.Job
             return jobs;
         }
 
+        private async Task<(string ExtensiveDescription, string? ImageLink)> TryExpandAndExtractDescriptionAsync(
+            IPage page,
+            IElementHandle jobElement)
+        {
+            try
+            {
+                // Click the job card safely
+                await jobElement.ScrollIntoViewIfNeededAsync();
+
+                var delayBeforeClick = Random.Shared.Next(250, 750);
+                await page.WaitForTimeoutAsync(delayBeforeClick);
+
+                await jobElement.ClickAsync(new ElementHandleClickOptions
+                {
+                    Timeout = 8000
+                });
+
+                // Wait for the job description section to appear
+                var section = await page.WaitForSelectorAsync(
+                    "section.Section_sectionComponent__nRsB2 div.JobDetails_jobDescription__uW_fK",
+                    new PageWaitForSelectorOptions
+                    {
+                        Timeout = 10000,
+                        State = WaitForSelectorState.Attached
+                    });
+
+                if (section == null)
+                    return (string.Empty, null);
+
+                // Wait a bit for React hydration
+                await page.WaitForTimeoutAsync(Random.Shared.Next(300, 900));
+
+                var html = await section.InnerHTMLAsync();
+
+                // Try to get the logo image
+                var imgEl = await page.QuerySelectorAsync("img[data-test='employer-header-logo']");
+                string? imgSrc = null;
+                if (imgEl != null)
+                    imgSrc = await imgEl.GetAttributeAsync("src");
+
+                return (html, imgSrc);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("Timeout: job description section did not appear in time.");
+                return (string.Empty, null);
+            }
+            catch (PlaywrightException ex)
+            {
+                Console.WriteLine($"Playwright error while expanding job: {ex.Message}");
+                return (string.Empty, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error while expanding job: {ex.Message}");
+                return (string.Empty, null);
+            }
+        }
 
 
 
