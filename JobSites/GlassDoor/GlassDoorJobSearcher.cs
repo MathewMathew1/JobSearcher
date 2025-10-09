@@ -30,8 +30,10 @@ namespace JobSearcher.Job
                 Args = new[] { "--ignore-certificate-errors", "--disable-blink-features=AutomationControlled" }
 
             });
+
             var proxy = _proxyService.GetContextOptions();
             var context = await browser.NewContextAsync(_proxyService.GetContextOptions());
+
             var page = await context.NewPageAsync();
             var url = $"https://www.glassdoor.com/Job/{search.Location}-{search.JobSearched}-jobs-SRCH_IL.0,6_IN193_KO7,16.htm?sortBy=date_desc";
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });

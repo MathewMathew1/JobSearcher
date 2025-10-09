@@ -42,15 +42,15 @@ namespace JobSearch.ProxyService
 
             // optionally prefer mobile by selecting mobile UA + small viewport
             (int w, int h) viewport;
- 
+
             viewport = _viewports[rng.Next(_viewports.Length)];
-            
+
 
             // proxy object
             var proxy = new Proxy
             {
-                Server = _proxyServer ?? "http://brd.superproxy.io:33335",
-                Username = _username,
+                Server = "http://brd.superproxy.io:22225",
+                Username = $"brd-customer-{_username}-zone-residential_proxy1-country-pl",
                 Password = _password
             };
 
@@ -64,10 +64,10 @@ namespace JobSearch.ProxyService
             return new BrowserNewContextOptions
             {
                 UserAgent = ua,
-               // ViewportSize = new ViewportSize { Width = viewport.w, Height = viewport.h },
+                // ViewportSize = new ViewportSize { Width = viewport.w, Height = viewport.h },
                 Locale = "en-US",
                 IgnoreHTTPSErrors = true,
-                //Proxy = proxy,
+                Proxy = proxy,
                 ExtraHTTPHeaders = headers,
                 // optional: set reduced timeout to surface blocks faster
                 // DefaultNavigationTimeout = 30000
